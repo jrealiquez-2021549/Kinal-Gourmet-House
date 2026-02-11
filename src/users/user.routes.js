@@ -1,16 +1,16 @@
 import { Router } from "express";
-import { createField, getFields } from "./field.controller.js";
+import { createUser, getUsers } from "./user.controller.js";
 
 const router = Router();
 
 router.post(
     '/create',
-    createField
+    createUser
 )
 
 router.get(
     '/',
-    getFields
+    getUsers
 )
 
 export default router;

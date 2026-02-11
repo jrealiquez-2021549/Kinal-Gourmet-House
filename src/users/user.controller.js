@@ -1,25 +1,25 @@
-import Field from './field.model.js';
+import User from './user.model.js';
 
-export const createField = async (req, res) => {
+export const createUser = async (req, res) => {
     try {
-        const fieldData = req.body;
+        const userData = req.body;
         /* if(req.file){
             const extension = req.file.path.split('.').pop();
             const filename = req.file.filename;
-            const relativePath = filename.substring(filename.indexOf('fields/'));
+            const relativePath = filename.substring(filename.indexOf('users/'));
 
-            fieldData.photo = `${relativePath}.${extension}`;
+            userData.photo = `${relativePath}.${extension}`;
         } else {
-            fieldData.photo = 'fields/kinal_sports_nyvxo5';
+            userData.photo = 'users/kinal_gourmet_house_nyvxo5';
         }*/
 
-        const field = new Field(fieldData);
-        await field.save();
+        const user = new User(userData);
+        await user.save();
 
         res.status(201).json({
             success: true,
             message: 'Campo creado exitosamente',
-            data: field
+            data: user
         })
     } catch (error) {
         res.status(400).json({
@@ -30,7 +30,7 @@ export const createField = async (req, res) => {
     }
 }
 
-export const getFields = async (req, res) => {
+export const getUsers = async (req, res) => {
     try {
         const { page = 1, limit = 10, isActive = true } = req.query;
         const filter = { isActive };
@@ -40,16 +40,16 @@ export const getFields = async (req, res) => {
             sort: { createdAt: -1 }
         }
 
-        const fields = await Field.find(filter)
+        const users = await User.find(filter)
             .limit(limit * 1)
             .skip((page - 1) * limit)
             .sort(options.sort);
 
-        const total = await Field.countDocuments(filter);
+        const total = await User.countDocuments(filter);
 
         res.status(200).json({
             success: true,
-            data: fields,
+            data: users,
             pagination: {
                 currentPage: page,
                 totalPages: Math.ceil(total / limit),
