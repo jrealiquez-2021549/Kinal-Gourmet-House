@@ -7,6 +7,7 @@ import morgan from 'morgan';
 import { dbConnection } from './db.js';
 import { corsOptions } from './cors-configuration.js';
 import { helmetConfiguration } from './helmet-configuration.js';
+import userRoutes from '../src/users/user.routes.js';
 
 const BASE_PATH = '/kinalGourmetHouse/v1';
 
@@ -26,6 +27,8 @@ const routes = (app) => {
             service: 'Kinal Gourmet House Server'
         })
     })
+
+    app.use(`${BASE_PATH}/users`, userRoutes);
 
     app.use((req, res) => {
         res.status(404).json({
