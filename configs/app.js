@@ -8,6 +8,7 @@ import { dbConnection } from './db.js';
 import { corsOptions } from './cors-configuration.js';
 import { helmetConfiguration } from './helmet-configuration.js';
 import userRoutes from '../src/users/user.routes.js';
+import restaurantRoutes from '../src/restaurants/resturant.routes.js';
 
 const BASE_PATH = '/kinalGourmetHouse/v1';
 
@@ -29,6 +30,7 @@ const routes = (app) => {
     })
 
     app.use(`${BASE_PATH}/users`, userRoutes);
+    app.use(`${BASE_PATH}/restaurants`, restaurantRoutes);
 
     app.use((req, res) => {
         res.status(404).json({
