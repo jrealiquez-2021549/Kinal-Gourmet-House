@@ -1,6 +1,8 @@
 'use strict';
 
 import mongoose from 'mongoose';
+import bcrypt from 'bcryptjs';
+
 
 const userSchema = mongoose.Schema(
     {
@@ -52,8 +54,22 @@ const userSchema = mongoose.Schema(
     }
 );
 
-userSchema.index({ email: 1 });
 userSchema.index({ isActive: 1 });
 userSchema.index({ role: 1 });
+
+//Antes de guardar un usuario se ejecuta esta funcion
+//Si la contra no fue modificada, entonces no se encripta otra vez
+// Esta funcion reemplaza la contrasena original y la encripta por medio de bycrypt
+userSchema.pre('save', async function () {
+    if (!this.isModified('password')) return;
+
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
+});
+
+// Metodo para comparar password en login
+userSchema.methods.comparePassword = async function (password) {
+    return await bcrypt.compare(password, this.password);
+};
 
 export default mongoose.model('User', userSchema);
