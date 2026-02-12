@@ -42,6 +42,7 @@ export const getMenus = async (req, res) => {
         }
 
         const menus = await Menu.find(filter)
+            .populate('restaurant')
             .limit(limit * 1)
             .skip((page - 1) * limit)
             .sort(options.sort);
