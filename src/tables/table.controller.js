@@ -9,7 +9,7 @@ export const createTable = async (req, res) => {
         const table = new Table(data);
         await table.save();
 
-        return res.status(200).send({
+        return res.status(201).send({
             success: true,
             message: 'Mesa creada correctamente',
             table
