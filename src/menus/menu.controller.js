@@ -49,7 +49,7 @@ export const getMenus = async (req, res) => {
 
         const total = await Menu.countDocuments(filter);
 
-        res.status(200).json({
+        res.status(201).json({
             success: true,
             data: menus,
             pagination: {
