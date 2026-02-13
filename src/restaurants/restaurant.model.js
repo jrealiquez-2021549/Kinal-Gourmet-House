@@ -58,12 +58,10 @@ const restaurantSchema = mongoose.Schema(
             required: true
         },
 
-        images: [
-            {
-                type: String,
-                default: null
-            }
-        ],
+        images:{
+            type: String,
+            default: null
+        },
 
         status: {
             type: String,

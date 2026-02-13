@@ -12,7 +12,7 @@ const router = Router();
 
 router.post(
     '/create',
-    uploadRestaurantImages.array('images',3),
+    uploadRestaurantImages.single('images'),
     cleanUploaderFile,
     createRestaurant
 );
