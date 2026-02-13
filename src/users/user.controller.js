@@ -5,7 +5,7 @@ export const createUser = async (req, res) => {
         const userData = req.body;
 
         if (req.file) {
-        userData.profileImage = req.file.path; 
+            userData.profileImage = req.file.path; 
         }
 
         const user = new User(userData);

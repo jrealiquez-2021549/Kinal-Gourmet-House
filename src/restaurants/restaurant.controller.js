@@ -5,6 +5,10 @@ export const createRestaurant = async (req, res) => {
     try {
         const restaurantData = req.body;
 
+        if (req.files && req.files.length > 0) {
+            //Se mapean todas las imagenes al arreglo llamado images
+            restaurantData.images = req.files.map(file => file.path);
+        }
         const restaurant = new Restaurant(restaurantData);
         await restaurant.save();
 
