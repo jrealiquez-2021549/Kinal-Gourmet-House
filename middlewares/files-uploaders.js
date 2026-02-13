@@ -66,9 +66,11 @@ const createCloudinary = (folder) => {
 }
 
 export const uploadRestaurantImages = createCloudinary(
-    process.env.CLOUDINARY_FOLDER || 'kinal_gourmet/restaurants'
+    process.env.CLOUDINARY_FOLDER_RESTAURANTS || 'kinal_gourmet/restaurants'
 )
 
 export const uploadUserImages = createCloudinary(
     process.env.CLOUDINARY_FOLDER || 'kinal_gourmet/users'
 )
+
+export { cloudinary };

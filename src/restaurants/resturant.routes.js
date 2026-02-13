@@ -5,14 +5,14 @@ import {
     //updateRestaurant,
     //deleteRestaurant
 } from "./restaurant.controller.js";
-import{createCloudinar}from '../../middlewares/files-uploaders.js';
+import{uploadRestaurantImages}from '../../middlewares/files-uploaders.js';
 import{cleanUploaderFile} from '../../middlewares/delete-files-on-error.js';
 
 const router = Router();
 
 router.post(
     '/create',
-    createCloudinar.array('images', 3),
+    uploadRestaurantImages.array('images', 3),
     cleanUploaderFile,
     createRestaurant
 );
