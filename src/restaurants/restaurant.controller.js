@@ -5,6 +5,9 @@ export const createRestaurant = async (req, res) => {
     try {
         const restaurantData = req.body;
 
+        if(req.file){
+            restaurantData.images = req.file.path; 
+        }
         const restaurant = new Restaurant(restaurantData);
         await restaurant.save();
 

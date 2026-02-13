@@ -3,15 +3,10 @@ import User from './user.model.js';
 export const createUser = async (req, res) => {
     try {
         const userData = req.body;
-        /* if(req.file){
-            const extension = req.file.path.split('.').pop();
-            const filename = req.file.filename;
-            const relativePath = filename.substring(filename.indexOf('users/'));
 
-            userData.photo = `${relativePath}.${extension}`;
-        } else {
-            userData.photo = 'users/kinal_gourmet_house_nyvxo5';
-        }*/
+        if (req.file) {
+            userData.profileImage = req.file.path; 
+        }
 
         const user = new User(userData);
         await user.save();
