@@ -12,7 +12,8 @@ import restaurantRoutes from '../src/restaurants/resturant.routes.js';
 import tableRoutes from '../src/tables/table.routes.js';
 import menuRoutes from '../src/menus/menu.routes.js';
 import authRoutes from '../src/auth/auth.routes.js';
-import reservationRoutes from '../src/reservations/reservation.routes.js'
+import reservationRoutes from '../src/reservations/reservation.routes.js';
+import orderRoutes from '../src/orders/order.routes.js';
 
 const BASE_PATH = '/kinalGourmetHouse/v1';
 
@@ -39,6 +40,7 @@ const routes = (app) => {
     app.use(`${BASE_PATH}/menus`, menuRoutes);
     app.use(`${BASE_PATH}/reservations`, reservationRoutes);
     app.use(`${BASE_PATH}/auth`, authRoutes);
+    app.use(`${BASE_PATH}/orders`, orderRoutes);
 
 
     app.use((req, res) => {
