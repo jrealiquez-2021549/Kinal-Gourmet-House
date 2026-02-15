@@ -19,13 +19,13 @@ const reservationSchema = mongoose.Schema(
             ref: 'Table',
             required: [true,'La reservación debe pertenecer a una mesa']
         },
-        date:{
+        date: {
             type: Date,
-            required: [true,'La fecha de reservación debe ser válida']
+            default: Date.now
         },
         time: {
-            type: String,
-            required: [true,'La hora de reservación debe ser válida']
+            type: Date,
+            default: Date.now
         },
         numberOfPeople: {
             type: Number,
@@ -52,7 +52,6 @@ reservationSchema.index({ isActive: 1 })
 reservationSchema.index({ restaurant: 1 })
 reservationSchema.index({ table: 1 })
 reservationSchema.index({ date: 1 })
-
 
 reservationSchema.index({ table: 1, date: 1, time: 1, isActive: 1 })
 

@@ -1,19 +1,11 @@
+'use strict';
+
 import Menu from './menu.model.js';
-import Restaurant from '../restaurants/restaurant.model.js';
+import mongoose from 'mongoose';
 
 export const createMenu = async (req, res) => {
     try {
         const menuData = req.body;
-        /* if(req.file){
-            const extension = req.file.path.split('.').pop();
-            const filename = req.file.filename;
-            const relativePath = filename.substring(filename.indexOf('menus/'));
-
-            menuData.image = `${relativePath}.${extension}`;
-        } else {
-            menuData.image = 'menus/default_image';
-        }*/
-
         const menu = new Menu(menuData);
         await menu.save();
 
@@ -49,14 +41,14 @@ export const getMenus = async (req, res) => {
 
         const total = await Menu.countDocuments(filter);
 
-        res.status(201).json({
+        res.status(200).json({
             success: true,
             data: menus,
             pagination: {
-                currentPage: page,
+                currentPage: parseInt(page),
                 totalPages: Math.ceil(total / limit),
                 totalRecords: total,
-                limit
+                limit: parseInt(limit)
             }
         })
     } catch (error) {
@@ -67,3 +59,115 @@ export const getMenus = async (req, res) => {
         })
     }
 }
+
+export const getMenuById = async (req, res) => {
+    try {
+        const { id } = req.params;
+        
+        // Validar ObjectId
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({
+                success: false,
+                message: "ID inválido",
+            });
+        }
+
+        const menu = await Menu.findById(id).populate('restaurant');
+        
+        if (!menu) {
+            return res.status(404).json({
+                success: false,
+                message: "Menú no encontrado",
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            data: menu,
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Error al obtener el menú",
+            error: error.message,
+        });
+    }
+};
+
+export const updateMenu = async (req, res) => {
+    try {
+        const { id } = req.params;
+        
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({
+                success: false,
+                message: "ID inválido",
+            });
+        }
+
+        const currentMenu = await Menu.findById(id);
+        
+        if (!currentMenu) {
+            return res.status(404).json({
+                success: false,
+                message: "Menú no encontrado",
+            });
+        }
+
+        const updatedMenu = await Menu.findByIdAndUpdate(
+            id,
+            req.body,
+            {
+                new: true,
+                runValidators: true,
+            }
+        ).populate('restaurant');
+
+        res.status(200).json({
+            success: true,
+            message: "Menú actualizado exitosamente",
+            data: updatedMenu,
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Error al actualizar menú",
+            error: error.message,
+        });
+    }
+};
+
+export const deleteMenu = async (req, res) => {
+    try {
+        const { id } = req.params;
+        
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({
+                success: false,
+                message: "ID inválido",
+            });
+        }
+
+        const menu = await Menu.findById(id);
+        
+        if (!menu) {
+            return res.status(404).json({
+                success: false,
+                message: "Menú no encontrado",
+            });
+        }
+
+        await Menu.findByIdAndDelete(id);
+
+        res.status(200).json({
+            success: true,
+            message: "Menú eliminado exitosamente",
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Error al eliminar menú",
+            error: error.message,
+        });
+    }
+};

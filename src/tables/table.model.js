@@ -5,7 +5,7 @@ import mongoose from 'mongoose';
 const tableSchema = mongoose.Schema(
     {
         number: {
-            type: Number,
+            type: String,
             required: [true, 'El número de mesa es requerido']
         },
 

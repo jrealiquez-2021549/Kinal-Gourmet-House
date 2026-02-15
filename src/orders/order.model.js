@@ -4,7 +4,7 @@ const orderDetailSchema = new mongoose.Schema(
     {
         dish: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "Menu",
+            ref: "Dish",  // ✅ Cambiado de "Menu" a "Dish"
             required: true
         },
         quantity: {
@@ -15,10 +15,20 @@ const orderDetailSchema = new mongoose.Schema(
         unitPrice: {
             type: Number,
             required: true
+        },
+        subtotal: {
+            type: Number,
+            required: true
         }
     },
     { _id: false }
 );
+
+// Calcular subtotal antes de guardar
+orderDetailSchema.pre('validate', function(next) {
+    this.subtotal = this.quantity * this.unitPrice;
+    next();
+});
 
 const orderSchema = new mongoose.Schema(
     {
