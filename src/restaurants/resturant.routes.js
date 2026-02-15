@@ -1,26 +1,31 @@
 import { Router } from "express";
-import {
-    createRestaurant,
-    getRestaurants,
-    //updateRestaurant,
-    //deleteRestaurant
-} from "./restaurant.controller.js";
-import{uploadRestaurantImages}from '../../middlewares/files-uploaders.js';
-import{cleanUploaderFile} from '../../middlewares/delete-files-on-error.js';
+import { createRestaurant, getRestaurants, getRestaurantById,updateRestaurant, deleteRestaurant } from "./restaurant.controller.js";
+import { uploadRestaurantImages } from "../../middlewares/files-uploaders.js";
 
 const router = Router();
 
 router.post(
-    '/create',
-    uploadRestaurantImages.single('images'),
-    cleanUploaderFile,
+    '/create', 
+    uploadRestaurantImages.single('image'),
     createRestaurant
 );
+
 router.get(
     '/', 
-    getRestaurants
+    getRestaurants);
+
+router.get(
+    '/:id', 
+    getRestaurantById);
+
+router.put(
+    '/:id',
+    uploadRestaurantImages.single('image'),
+    updateRestaurant
 );
-//router.put('/update/:id', updateRestaurant);
-//router.delete('/delete/:id', deleteRestaurant);
+
+router.delete(
+    '/:id', 
+    deleteRestaurant);
 
 export default router;

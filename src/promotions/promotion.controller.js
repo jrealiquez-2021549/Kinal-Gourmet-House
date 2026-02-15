@@ -1,70 +1,73 @@
-'use strict';
-
-import Menu from './menu.model.js';
+import Promotion from './promotion.model.js';
 import mongoose from 'mongoose';
 
-export const createMenu = async (req, res) => {
+export const createPromotion = async (req, res) => {
     try {
-        const menuData = req.body;
-        const menu = new Menu(menuData);
-        await menu.save();
+        const promotionData = req.body;
+        const promotion = new Promotion(promotionData);
+        await promotion.save();
 
         res.status(201).json({
             success: true,
-            message: 'Menú creado exitosamente',
-            data: menu
-        })
+            message: 'Promoción creada exitosamente',
+            data: promotion
+        });
     } catch (error) {
         res.status(400).json({
             success: false,
-            message: 'Error al crear el menú',
+            message: 'Error al crear la promoción',
             error: error.message
-        })
+        });
     }
-}
+};
 
-export const getMenus = async (req, res) => {
+export const getPromotions = async (req, res) => {
     try {
-        const { page = 1, limit = 10, isActive = true } = req.query;
-        const filter = { isActive };
-        const options = {
-            page: parseInt(page),
-            limit: parseInt(limit),
-            sort: { createdAt: -1 }
+        const { page = 1, limit = 10, isActive, restaurant, current } = req.query;
+        
+        const filter = {};
+        if (isActive !== undefined) filter.isActive = isActive === 'true';
+        if (restaurant) filter.restaurant = restaurant;
+        
+        // Filtrar promociones vigentes
+        if (current === 'true') {
+            const now = new Date();
+            filter.startDate = { $lte: now };
+            filter.endDate = { $gte: now };
+            filter.isActive = true;
         }
 
-        const menus = await Menu.find(filter)
-            .populate('restaurant')
+        const promotions = await Promotion.find(filter)
+            .populate('restaurant', 'name address phone')
             .limit(limit * 1)
             .skip((page - 1) * limit)
-            .sort(options.sort);
+            .sort({ createdAt: -1 });
 
-        const total = await Menu.countDocuments(filter);
+        const total = await Promotion.countDocuments(filter);
 
         res.status(200).json({
             success: true,
-            data: menus,
+            data: promotions,
             pagination: {
                 currentPage: parseInt(page),
                 totalPages: Math.ceil(total / limit),
                 totalRecords: total,
                 limit: parseInt(limit)
             }
-        })
+        });
     } catch (error) {
         res.status(500).json({
             success: false,
-            message: 'Error al obtener los menús',
+            message: 'Error al obtener las promociones',
             error: error.message
-        })
+        });
     }
-}
+};
 
-export const getMenuById = async (req, res) => {
+export const getPromotionById = async (req, res) => {
     try {
         const { id } = req.params;
         
-        // Validar ObjectId
         if (!mongoose.Types.ObjectId.isValid(id)) {
             return res.status(400).json({
                 success: false,
@@ -72,29 +75,30 @@ export const getMenuById = async (req, res) => {
             });
         }
 
-        const menu = await Menu.findById(id).populate('restaurant');
+        const promotion = await Promotion.findById(id)
+            .populate('restaurant', 'name address phone email');
         
-        if (!menu) {
+        if (!promotion) {
             return res.status(404).json({
                 success: false,
-                message: "Menú no encontrado",
+                message: "Promoción no encontrada",
             });
         }
 
         res.status(200).json({
             success: true,
-            data: menu,
+            data: promotion,
         });
     } catch (error) {
         res.status(500).json({
             success: false,
-            message: "Error al obtener el menú",
+            message: "Error al obtener la promoción",
             error: error.message,
         });
     }
 };
 
-export const updateMenu = async (req, res) => {
+export const updatePromotion = async (req, res) => {
     try {
         const { id } = req.params;
         
@@ -105,39 +109,39 @@ export const updateMenu = async (req, res) => {
             });
         }
 
-        const currentMenu = await Menu.findById(id);
+        const currentPromotion = await Promotion.findById(id);
         
-        if (!currentMenu) {
+        if (!currentPromotion) {
             return res.status(404).json({
                 success: false,
-                message: "Menú no encontrado",
+                message: "Promoción no encontrada",
             });
         }
 
-        const updatedMenu = await Menu.findByIdAndUpdate(
+        const updatedPromotion = await Promotion.findByIdAndUpdate(
             id,
             req.body,
             {
                 new: true,
                 runValidators: true,
             }
-        ).populate('restaurant');
+        ).populate('restaurant', 'name address');
 
         res.status(200).json({
             success: true,
-            message: "Menú actualizado exitosamente",
-            data: updatedMenu,
+            message: "Promoción actualizada exitosamente",
+            data: updatedPromotion,
         });
     } catch (error) {
         res.status(500).json({
             success: false,
-            message: "Error al actualizar menú",
+            message: "Error al actualizar promoción",
             error: error.message,
         });
     }
 };
 
-export const deleteMenu = async (req, res) => {
+export const deletePromotion = async (req, res) => {
     try {
         const { id } = req.params;
         
@@ -148,25 +152,25 @@ export const deleteMenu = async (req, res) => {
             });
         }
 
-        const menu = await Menu.findById(id);
+        const promotion = await Promotion.findById(id);
         
-        if (!menu) {
+        if (!promotion) {
             return res.status(404).json({
                 success: false,
-                message: "Menú no encontrado",
+                message: "Promoción no encontrada",
             });
         }
 
-        await Menu.findByIdAndDelete(id);
+        await Promotion.findByIdAndDelete(id);
 
         res.status(200).json({
             success: true,
-            message: "Menú eliminado exitosamente",
+            message: "Promoción eliminada exitosamente",
         });
     } catch (error) {
         res.status(500).json({
             success: false,
-            message: "Error al eliminar menú",
+            message: "Error al eliminar promoción",
             error: error.message,
         });
     }

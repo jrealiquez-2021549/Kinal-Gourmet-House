@@ -1,26 +1,26 @@
 import { Router } from "express";
-import { createTable, getTables,getTableById,updateTable,deleteTable } from "./table.controller.js";
+import { createReview, getReviews,getReviewById,updateReview,deleteReview } from "./review.controller.js";
 
 const router = Router();
 
 router.post(
     '/create', 
-    createTable);
+    createReview);
 
 router.get(
     '/', 
-    getTables);
+    getReviews);
 
 router.get(
     '/:id', 
-    getTableById);
+    getReviewById);
 
 router.put(
     '/:id', 
-    updateTable);
+    updateReview);
 
 router.delete(
     '/:id', 
-    deleteTable);
+    deleteReview);
 
 export default router;
