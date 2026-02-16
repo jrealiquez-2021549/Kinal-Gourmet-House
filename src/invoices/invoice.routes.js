@@ -1,33 +1,30 @@
-'use strict';
-
 import { Router } from "express";
-import { 
-    generateInvoice, 
-    getInvoicesByRestaurant, 
-    updateInvoice, 
-    deleteInvoice 
-} from "./invoice.controller.js";
+import { createInvoice, getInvoices,getInvoiceById,getInvoiceByNumber,updateInvoice,deleteInvoice } from "./invoice.controller.js";
 
 const router = Router();
 
 router.post(
-    '/generate', 
-    generateInvoice
-);
+    '/create', 
+    createInvoice);
 
 router.get(
-    '/restaurant/:restaurantId', 
-    getInvoicesByRestaurant
-);
+    '/', 
+    getInvoices);
+
+router.get(
+    '/:id', 
+    getInvoiceById);
+
+router.get(
+    '/number/:invoiceNumber', 
+    getInvoiceByNumber);
 
 router.put(
-    '/update/:id', 
-    updateInvoice
-);
+    '/:id', 
+    updateInvoice);
 
 router.delete(
-    '/delete/:id', 
-    deleteInvoice
-);
+    '/:id', 
+    deleteInvoice);
 
 export default router;

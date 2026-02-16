@@ -1,93 +1,255 @@
-'use strict';
-
 import Invoice from './invoice.model.js';
+import Order from '../orders/order.model.js';
+import mongoose from 'mongoose';
 
-// Generar Factura con cálculos automáticos
-export const generateInvoice = async (req, res) => {
+export const createInvoice = async (req, res) => {
     try {
-        const { user, restaurant, reservation, items, paymentMethod } = req.body;
+        const invoiceData = req.body;
 
-        // Validamos que vengan items
-        if (!items || items.length === 0) {
-            return res.status(400).json({ success: false, message: 'La factura debe tener al menos un item' });
+        // Verificar que la orden existe
+        if (invoiceData.order && mongoose.Types.ObjectId.isValid(invoiceData.order)) {
+            const order = await Order.findById(invoiceData.order);
+            if (!order) {
+                return res.status(404).json({
+                    success: false,
+                    message: 'Orden no encontrada'
+                });
+            }
+            
+            // Verificar que no exista ya una factura para esta orden
+            const existingInvoice = await Invoice.findOne({ order: invoiceData.order });
+            if (existingInvoice) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Ya existe una factura para esta orden'
+                });
+            }
         }
 
-        // Cálculo automático del subtotal
-        const subtotal = items.reduce((acc, item) => acc + (item.price * item.quantity), 0);
-        
-        // Impuesto de servicio
-        const serviceTax = subtotal * 0.10;
-        const total = subtotal + serviceTax;
-
-        const invoice = new Invoice({
-            user,
-            restaurant,
-            reservation,
-            items,
-            subtotal,
-            serviceTax,
-            total,
-            paymentMethod
-        });
-
+        const invoice = new Invoice(invoiceData);
         await invoice.save();
+
+        const populatedInvoice = await Invoice.findById(invoice._id)
+            .populate({
+                path: 'order',
+                populate: [
+                    { path: 'user', select: 'name email' },
+                    { path: 'restaurant', select: 'name address' }
+                ]
+            });
 
         res.status(201).json({
             success: true,
-            message: 'Factura generada exitosamente',
-            data: invoice
+            message: 'Factura creada exitosamente',
+            data: populatedInvoice
         });
     } catch (error) {
-        res.status(500).json({ success: false, error: error.message });
+        res.status(400).json({
+            success: false,
+            message: 'Error al crear la factura',
+            error: error.message
+        });
     }
 };
 
-// Obtener facturas por restaurante
-export const getInvoicesByRestaurant = async (req, res) => {
+export const getInvoices = async (req, res) => {
     try {
-        const { restaurantId } = req.params;
-        const invoices = await Invoice.find({ restaurant: restaurantId })
-            .populate('user', 'name email')
-            .populate('restaurant', 'name');
-            
-        res.status(200).json({ success: true, data: invoices });
+        const { page = 1, limit = 10, paymentStatus, paymentMethod } = req.query;
+        
+        const filter = {};
+        if (paymentStatus) filter.paymentStatus = paymentStatus;
+        if (paymentMethod) filter.paymentMethod = paymentMethod;
+
+        const invoices = await Invoice.find(filter)
+            .populate({
+                path: 'order',
+                populate: [
+                    { path: 'user', select: 'name email phone' },
+                    { path: 'restaurant', select: 'name address phone' }
+                ]
+            })
+            .limit(limit * 1)
+            .skip((page - 1) * limit)
+            .sort({ issuedAt: -1 });
+
+        const total = await Invoice.countDocuments(filter);
+
+        res.status(200).json({
+            success: true,
+            data: invoices,
+            pagination: {
+                currentPage: parseInt(page),
+                totalPages: Math.ceil(total / limit),
+                totalRecords: total,
+                limit: parseInt(limit)
+            }
+        });
     } catch (error) {
-        res.status(500).json({ success: false, error: error.message });
+        res.status(500).json({
+            success: false,
+            message: 'Error al obtener las facturas',
+            error: error.message
+        });
     }
 };
 
-// Actualizar
-export const updateInvoice = async (req, res) => {
+export const getInvoiceById = async (req, res) => {
     try {
         const { id } = req.params;
-        const updatedInvoice = await Invoice.findByIdAndUpdate(id, req.body, { new: true });
+        
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({
+                success: false,
+                message: "ID inválido",
+            });
+        }
 
-        if (!updatedInvoice) return res.status(404).json({ success: false, message: 'Factura no encontrada' });
-
-        res.status(200).json({ success: true, data: updatedInvoice });
-    } catch (error) {
-        res.status(500).json({ success: false, error: error.message });
-    }
-};
-
-// Eliminar
-export const deleteInvoice = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const invoiceDeleted = await Invoice.findByIdAndDelete(id);
-
-        if (!invoiceDeleted) {
+        const invoice = await Invoice.findById(id)
+            .populate({
+                path: 'order',
+                populate: [
+                    { path: 'user', select: 'name email phone' },
+                    { path: 'restaurant', select: 'name address phone email' },
+                    { path: 'table', select: 'number capacity' },
+                    { path: 'details.dish', select: 'name price' }
+                ]
+            });
+        
+        if (!invoice) {
             return res.status(404).json({
                 success: false,
-                message: 'No se encontró la factura para eliminar'
+                message: "Factura no encontrada",
             });
         }
 
         res.status(200).json({
             success: true,
-            message: 'Factura eliminada correctamente'
+            data: invoice,
         });
     } catch (error) {
-        res.status(500).json({ success: false, error: error.message });
+        res.status(500).json({
+            success: false,
+            message: "Error al obtener la factura",
+            error: error.message,
+        });
+    }
+};
+
+export const getInvoiceByNumber = async (req, res) => {
+    try {
+        const { invoiceNumber } = req.params;
+
+        const invoice = await Invoice.findOne({ invoiceNumber })
+            .populate({
+                path: 'order',
+                populate: [
+                    { path: 'user', select: 'name email phone' },
+                    { path: 'restaurant', select: 'name address phone' },
+                    { path: 'details.dish', select: 'name price' }
+                ]
+            });
+        
+        if (!invoice) {
+            return res.status(404).json({
+                success: false,
+                message: "Factura no encontrada",
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            data: invoice,
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Error al obtener la factura",
+            error: error.message,
+        });
+    }
+};
+
+export const updateInvoice = async (req, res) => {
+    try {
+        const { id } = req.params;
+        
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({
+                success: false,
+                message: "ID inválido",
+            });
+        }
+
+        const currentInvoice = await Invoice.findById(id);
+        
+        if (!currentInvoice) {
+            return res.status(404).json({
+                success: false,
+                message: "Factura no encontrada",
+            });
+        }
+
+        const updatedInvoice = await Invoice.findByIdAndUpdate(
+            id,
+            req.body,
+            {
+                new: true,
+                runValidators: true,
+            }
+        )
+        .populate({
+            path: 'order',
+            populate: [
+                { path: 'user', select: 'name email' },
+                { path: 'restaurant', select: 'name address' }
+            ]
+        });
+
+        res.status(200).json({
+            success: true,
+            message: "Factura actualizada exitosamente",
+            data: updatedInvoice,
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Error al actualizar factura",
+            error: error.message,
+        });
+    }
+};
+
+export const deleteInvoice = async (req, res) => {
+    try {
+        const { id } = req.params;
+        
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({
+                success: false,
+                message: "ID inválido",
+            });
+        }
+
+        const invoice = await Invoice.findById(id);
+        
+        if (!invoice) {
+            return res.status(404).json({
+                success: false,
+                message: "Factura no encontrada",
+            });
+        }
+
+        await Invoice.findByIdAndDelete(id);
+
+        res.status(200).json({
+            success: true,
+            message: "Factura eliminada exitosamente",
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Error al eliminar factura",
+            error: error.message,
+        });
     }
 };
