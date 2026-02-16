@@ -15,6 +15,8 @@ import authRoutes from '../src/auth/auth.routes.js';
 import reservationRoutes from '../src/reservations/reservation.routes.js';
 import orderRoutes from '../src/orders/order.routes.js';
 import reviewRoutes from '../src/reviews/review.routes.js';
+import dishRoutes from '../src/dishes/dish.routes.js';
+import promotionRoutes from '../src/promotions/promotion.routes.js';
 import eventRoutes from '../src/events/event.routes.js';
 import invoiceRoutes from '../src/invoices/invoice.routes.js';
 
@@ -45,6 +47,8 @@ const routes = (app) => {
     app.use(`${BASE_PATH}/auth`, authRoutes);
     app.use(`${BASE_PATH}/orders`, orderRoutes);
     app.use(`${BASE_PATH}/reviews`, reviewRoutes);
+    app.use(`${BASE_PATH}/dishes`, dishRoutes);
+    app.use(`${BASE_PATH}/promotions`, promotionRoutes);
     app.use(`${BASE_PATH}/events`, eventRoutes);
     app.use(`${BASE_PATH}/invoices`, invoiceRoutes);
 
