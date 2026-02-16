@@ -316,7 +316,7 @@ export const cancelEvent = async (req, res) => {
     } catch (error) {
         res.status(500).json({
             success: false,
-            message: "Error al cancelar evento",
+            message: "Error al cancelar evento.",
             error: error.message
         });
     }
