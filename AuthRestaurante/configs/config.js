@@ -1,0 +1,66 @@
+import dotenv from 'dotenv';
+
+dotenv.config();
+
+export const config = {
+  // JWT Configuration
+  jwt: {
+    secret: process.env.JWT_SECRET,
+    expiresIn: process.env.JWT_EXPIRES_IN,
+    refreshExpiresIn: process.env.JWT_REFRESH_EXPIRES_IN,
+    issuer: process.env.JWT_ISSUER,
+    audience: process.env.JWT_AUDIENCE,
+  },
+
+  // Security (aligned with .NET Security configuration)
+  security: {
+    saltRounds: 12,
+    maxLoginAttempts: 5,
+    lockoutTime: 30 * 60 * 1000,
+    passwordMinLength: 8,
+    // IP Filtering (aligned with .NET IpFilteringMiddleware)
+    blacklistedIPs: process.env.BLACKLISTED_IPS
+      ? process.env.BLACKLISTED_IPS.split(',').map((ip) => ip.trim())
+      : [],
+    whitelistedIPs: process.env.WHITELISTED_IPS
+      ? process.env.WHITELISTED_IPS.split(',').map((ip) => ip.trim())
+      : [],
+    restrictedPaths: process.env.RESTRICTED_PATHS
+      ? process.env.RESTRICTED_PATHS.split(',').map((path) => path.trim())
+      : [],
+  },
+
+  // App Settings (aligned with .NET AppSettings)
+  app: {
+    frontendUrl: process.env.FRONTEND_URL,
+  },
+
+  // Security Settings (aligned with .NET Security config)
+  cors: {
+    allowedOrigins: process.env.ALLOWED_ORIGINS
+      ? process.env.ALLOWED_ORIGINS.split(',').map((o) => o.trim())
+      : [],
+    adminAllowedOrigins: process.env.ADMIN_ALLOWED_ORIGINS
+      ? process.env.ADMIN_ALLOWED_ORIGINS.split(',').map((o) => o.trim())
+      : [],
+  },
+
+  // Verification tokens
+  verification: {
+    // Read expirations from env (hours) for easy configuration and parity with .NET
+    emailTokenExpiry:
+      (process.env.VERIFICATION_EMAIL_EXPIRY_HOURS
+        ? parseInt(process.env.VERIFICATION_EMAIL_EXPIRY_HOURS, 10)
+        : 24) *
+      60 *
+      60 *
+      1000,
+    passwordResetExpiry:
+      (process.env.PASSWORD_RESET_EXPIRY_HOURS
+        ? parseInt(process.env.PASSWORD_RESET_EXPIRY_HOURS, 10)
+        : 1) *
+      60 *
+      60 *
+      1000,
+  },
+};
