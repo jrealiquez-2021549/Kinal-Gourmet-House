@@ -46,7 +46,7 @@ PASO 2 - Levantar PostgreSQL con Docker
   Abre una terminal y ejecuta el siguiente comando. Esto crea el contenedor
   de PostgreSQL con la base de datos y credenciales que necesita el proyecto:
 
-    docker run -d --name kinal-gourmet-postgres -e POSTGRES_DB=KGourmetAuth -e POSTGRES_USER=root -e POSTGRES_PASSWORD=admin -p 5438:5432 postgres:16
+    docker run -d --name kinal-gourmet-postgres -e POSTGRES_DB=KGourmetAuth -e POSTGRES_USER=root -e POSTGRES_PASSWORD=admin -p 5436:5432 postgres:16
 
   IMPORTANTE: Este comando solo se ejecuta la primera vez. Si el contenedor
   ya existe y esta apagado, usa este comando en su lugar:
@@ -60,7 +60,7 @@ PASO 3 - (Opcional) Conectar pgAdmin 4
   Si deseas visualizar la base de datos en pgAdmin, conéctate con estos datos:
 
     Host     : localhost
-    Port     : 5438
+    Port     : 5436
     Database : KGourmetAuth
     Username : root
     Password : admin
