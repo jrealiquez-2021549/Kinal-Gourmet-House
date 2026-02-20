@@ -83,7 +83,7 @@ PASO 5 - Verificar el archivo .env
 
     # Database PostgreSQL
     DB_HOST=localhost
-    DB_PORT=5438
+    DB_PORT=5436
     DB_NAME=KGourmetAuth
     DB_USERNAME=root
     DB_PASSWORD=admin
