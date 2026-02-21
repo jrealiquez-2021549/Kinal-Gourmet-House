@@ -10,23 +10,20 @@
 	Terminal 1 - Para la autenticacion 
 	Terminal 2 - Para probar el sistema del restaurante
 
-8vo paso - Para probar los endpoints se recomienda ir a PostMan e importar las peticiones por medio de import -- IMPORTAR EL ARCHIVO LLAMADO Gestor de opiniones.postman_collection ubicado en la carpeta ArchivoJSONpostMan
+8vo paso - Para probar los endpoints se recomienda ir a PostMan e importar las peticiones por medio de import -- IMPORTAR EL ARCHIVO LLAMADO Kinal-Gourmet-House.postman_collection ubicado en la carpeta ArchivoJSONpostMan
 
 
 # INTRUCCIONES AUTENTICACION DE USUARIO
 1er paso - Ubicarse dentro de la terminal 1 y situarse en la carpeta AuthRestaurante por medio del siguiente comando : cd AuthRestaurante
 2do paso - Estando ahi, realizar el comando: pnpm install nodemon
 
-ANTES DE CONTINUAR, IMPORTANTE: 
-	ES IMPORTANTE QUE TENGA ABIERTO docker desktop y asi mismo, pgAdmin
+ANTES DE CONTINUAR, IMPORTANTE: ES IMPORTANTE QUE TENGA ABIERTO docker desktop y asi mismo, pgAdmin
 
 3er paso - en la terminal 1, ingresar el siguiente comando: docker run -d --name restaurante-postgres -e POSTGRES_DB=KGourmetAuth -e POSTGRES_USER=root -e POSTGRES_PASSWORD=admin -p 5436:5432 postgres:16
 4to paso - Verificar en docker-desktop que el contenedor se haya inicializado correctamente y este activo
 5to paso - Ejecutar en la terminal 1 el siguiente comando : pnpm add -D cross-env
 7mo paso - Ejecutar en la terminal 1 el siguiente comando : docker compose up -d
 8vo paso - Realizar el siguiente comando para correr el programa: pnpm run dev
-7mo paso - Probar las peticiones en PostMan del siguiente link: 
--- 
 
 Forma de probar las peticiones:
 1. Probar la carpeta llamada (FuncionesUsuario - Registrar)
