@@ -137,7 +137,6 @@ const couponSchema = mongoose.Schema(
 );
 
 // Índices
-couponSchema.index({ code: 1 }, { unique: true });
 couponSchema.index({ isActive: 1 });
 couponSchema.index({ validFrom: 1, validUntil: 1 });
 couponSchema.index({ applicableRestaurants: 1 });
