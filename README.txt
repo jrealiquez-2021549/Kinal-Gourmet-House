@@ -1,389 +1,60 @@
-================================================================================
-KINAL GOURMET HOUSE - SISTEMA DE GESTION DE RESTAURANTES
-================================================================================
+# INSTRUCCIONES GENERALES
+1er paso - Crear una carpeta en el disco local C: (De preferencia llamarla Kinal-Gourmet-House)
+2do paso - Abrir la terminar y situarse dentro de la carpeta anteriormente creada
+3er paso - Realizar git 
+4to paso - Clonar el repositorio dentro de la carpeta ya antes mencionada por medio del siguiente comando: git clone https://github.com/jrealiquez-2021549/Kinal-Gourmet-House.git
 
-Este sistema esta compuesto por dos APIs que trabajan juntas:
+5to paso - Ingresar a la carpeta clonada por medio del siguiente comando: cd Kinal-Gourmet-House
+6to paso - Realizar "code . " dentro de la terminar para abrir el proyecto en Visual Studio Code
+7mo paso - Dentro e VS abrir 2 terminales distintas
+	Terminal 1 - Para la autenticacion 
+	Terminal 2 - Para probar el sistema del restaurante
 
-  - AuthRestaurante  : Maneja autenticacion, roles y tokens JWT
-                       Tecnologia: Node.js + PostgreSQL
-                       Puerto: 3005
+8vo paso - Para probar los endpoints se recomienda ir a PostMan e importar las peticiones por medio de import -- IMPORTAR EL ARCHIVO LLAMADO Gestor de opiniones.postman_collection ubicado en la carpeta ArchivoJSONpostMan
 
-  - Kinal-Gourmet-House : Maneja restaurantes, pedidos, reservaciones y mas
-                          Tecnologia: Node.js + MongoDB
-                          Puerto: 3006
 
---------------------------------------------------------------------------------
-REQUISITOS PREVIOS
---------------------------------------------------------------------------------
+# INTRUCCIONES AUTENTICACION DE USUARIO
+1er paso - Ubicarse dentro de la terminal 1 y situarse en la carpeta AuthRestaurante por medio del siguiente comando : cd AuthRestaurante
+2do paso - Estando ahi, realizar el comando: pnpm install nodemon
 
-Antes de comenzar, asegurate de tener instalado lo siguiente:
+ANTES DE CONTINUAR, IMPORTANTE: 
+	ES IMPORTANTE QUE TENGA ABIERTO docker desktop y asi mismo, pgAdmin
 
-  - Node.js v18 o superior       https://nodejs.org/
-  - pnpm (gestor de paquetes)    https://pnpm.io/
-  - Docker Desktop               https://www.docker.com/products/docker-desktop/
-  - MongoDB corriendo localmente en el puerto 27017
-  - pgAdmin 4 (opcional)         https://www.pgadmin.org/download/
-  - Postman para probar endpoints https://www.postman.com/downloads/
+3er paso - en la terminal 1, ingresar el siguiente comando: docker run -d --name restaurante-postgres -e POSTGRES_DB=KGourmetAuth -e POSTGRES_USER=root -e POSTGRES_PASSWORD=admin -p 5436:5432 postgres:16
+4to paso - Verificar en docker-desktop que el contenedor se haya inicializado correctamente y este activo
+5to paso - Ejecutar en la terminal 1 el siguiente comando : pnpm add -D cross-env
+7mo paso - Ejecutar en la terminal 1 el siguiente comando : docker compose up -d
+8vo paso - Realizar el siguiente comando para correr el programa: pnpm run dev
+7mo paso - Probar las peticiones en PostMan del siguiente link: 
+-- 
 
---------------------------------------------------------------------------------
-ESTRUCTURA DEL PROYECTO
---------------------------------------------------------------------------------
+Forma de probar las peticiones:
+1. Probar la carpeta llamada (FuncionesUsuario - Registrar)
+	1.1 Registrate (reemplaza el correo, nombre y contraseña por una original)
+	1.2 En Verificar tu cuenta ingresa el token que se mando a tu correo únicamente lo que sigue luego del verify/ DENTRO DE LA URL
+	1.3 Inicia sesión y copia tu token
+	1.4 Si deseas cambiar tu contraseña, PARA PROBAR LA PETICION, ve a Authorization, elige la opción de BEARER TOKEN e  ingresa el token que se te dio al iniciar sesión e ingresa tu contraseña actual y contraseña nueva
 
-  Kinal-Gourmet-House/
-  |
-  |-- AuthRestaurante/         API de autenticacion (Puerto 3005)
-  |
-  |-- Kinal-Gourmet-House/     API principal del sistema (Puerto 3006)
+2. Probar la carpeta llamada (FuncionesAdmin - Login)
+  1.1 Inicia sesion con las credenciales del admin general (CREADO AUTOMATICAMENTE)
+  1.2 Para crear un Admin de restaurante debes haber hecho primero el paso 1.1 ya que para crear el Admin de restaurante, aparte los datos, se te pedira el token que se genero al iniciar sesion, esto confimara que eres el ADMIN GENERAL
+  1.3 Para obtener el token de un Admin de restaurante, el admin general tuvo que haber creado primeramente el usuario, con la cuenta creada puedes hacer login en el admin de restaurante, para probar las consultas del mismo en furutas ocasiones, copia el token generado al iniciar sesion.
 
---------------------------------------------------------------------------------
-PARTE 1 - CONFIGURAR Y CORRER AuthRestaurante
---------------------------------------------------------------------------------
+3. Probar la carpeta llamada (CambiarContrasena - Cualquier rol)
+  1.1 Para poder cambiar tu contraseña unicamente debes antes de ingresar tu contrasena pasada y la nueva, debes poner tu token generado al iniciar sesion en la parte de Authorization y escoge BEARER TOKEN e ingresalo.
 
-PASO 1 - Abrir Docker Desktop
-  Abre Docker Desktop y asegurate de que este corriendo antes de continuar.
 
-PASO 2 - Levantar PostgreSQL con Docker
-  Abre una terminal y ejecuta el siguiente comando. Esto crea el contenedor
-  de PostgreSQL con la base de datos y credenciales que necesita el proyecto:
+# Api Kinal-Gourmet-House
 
-    docker run -d --name kinal-gourmet-postgres -e POSTGRES_DB=KGourmetAuth -e POSTGRES_USER=root -e POSTGRES_PASSWORD=admin -p 5436:5432 postgres:16
+/ Para probar el Kinal-Gourmet-House se debe de estar en la ruta:
+  C:\Kinal-Gourmet-House\Kinal-Gourmet-House\Kinal-Gourmet-House
 
-  IMPORTANTE: Este comando solo se ejecuta la primera vez. Si el contenedor
-  ya existe y esta apagado, usa este comando en su lugar:
+/ **Instalar en la terminal pnpm con:** pnpm install nodemon
 
-    docker start kinal-gourmet-postgres
+/ **Instalar la dependencia en la terminar de axios con: :** pnpm add axios
 
-  Verifica en Docker Desktop que el contenedor "kinal-gourmet-postgres"
-  aparezca con estado "Running".
+/ **En la terminar iniciar la API:** pnpm run dev
 
-PASO 3 - (Opcional) Conectar pgAdmin 4
-  Si deseas visualizar la base de datos en pgAdmin, conéctate con estos datos:
+/ La API Kinal-Gourmet-House utiliza autenticación mediante JWT (JSON Web Token).
 
-    Host     : localhost
-    Port     : 5436
-    Database : KGourmetAuth
-    Username : root
-    Password : admin
-
-  NOTA: Las tablas se crean automáticamente cuando corres la API por primera
-  vez. No necesitas crearlas manualmente.
-
-PASO 4 - Instalar dependencias
-  Abre una terminal en la carpeta AuthRestaurante y ejecuta:
-
-    cd AuthRestaurante
-    pnpm install
-
-PASO 5 - Verificar el archivo .env
-  Confirma que el archivo .env dentro de AuthRestaurante tenga este contenido:
-
-    # Server
-    NODE_ENV=development
-    PORT=3005
-
-    # Database PostgreSQL
-    DB_HOST=localhost
-    DB_PORT=5436
-    DB_NAME=KGourmetAuth
-    DB_USERNAME=root
-    DB_PASSWORD=admin
-    DB_SQL_LOGGING=false
-
-    # JWT Configuration
-    JWT_SECRET=JWTSECRETOnoEmail!
-    JWT_EXPIRES_IN=30m
-
-    EMAIL_USER=quuuiiinntooo@gmail.com
-    EMAIL_PASS=eldq idpb vivv ycel   
-
-    JWT_REFRESH_EXPIRES_IN=7d
-    JWT_ISSUER=AuthService
-    JWT_AUDIENCE=AuthService
-
-    # Frontend URL
-    FRONTEND_URL=http://localhost:5173
-
-    # Security
-    ALLOWED_ORIGINS=http://localhost:5173,http://localhost:3000
-    ADMIN_ALLOWED_ORIGINS=http://localhost:5173
-
-PASO 6 - Iniciar AuthRestaurante
-  En la misma terminal ejecuta:
-
-    pnpm run dev
-
-  Si todo esta correcto veras esto en la terminal:
-
-    PostgreSQL | Trying to connect...
-    PostgreSQL | Connected to PostgreSQL
-    PostgreSQL | Models synchronized with database
-    Servidor corriendo en el puerto: 3005
-
---------------------------------------------------------------------------------
-PARTE 2 - CONFIGURAR Y CORRER Kinal-Gourmet-House
---------------------------------------------------------------------------------
-
-PASO 1 - Asegurate de que MongoDB este corriendo
-  MongoDB debe estar activo en localhost:27017. Si lo instalaste como servicio
-  en Windows, normalmente ya corre automaticamente. Puedes verificarlo con:
-
-    mongosh
-
-PASO 2 - Instalar dependencias
-  Abre una SEGUNDA terminal en la carpeta Kinal-Gourmet-House y ejecuta:
-
-    cd Kinal-Gourmet-House
-    pnpm install
-    pnpm install nodemon
-    pnpm install mongoose
-
-PASO 3 - Verificar el archivo .env
-  Confirma que el archivo .env dentro de Kinal-Gourmet-House tenga esto:
-
-    NODE_ENV = development
-    PORT = 3006
-
-    URI_MONGO = mongodb://localhost:27017/kinalgourmethouse
-
-    JWT_SECRET = ClaveSuperSecretadeKinalGourmetparaJWT
-    JWT_ISSUER = AuthService
-    JWT_AUDIENCE = AuthService
-
-    AUTH_API_URL = http://localhost:3005
-
-    CLOUDINARY_CLOUD_NAME = dmukpwpu2
-    CLOUDINARY_API_KEY = 859931433891872
-    CLOUDINARY_API_SECRET = sD_eVYjgsWRA6czGwMxBk-3ekVo
-
-  IMPORTANTE: La variable AUTH_API_URL es fundamental. Le indica a
-  Kinal-Gourmet-House donde encontrar AuthRestaurante para validar los tokens.
-
-PASO 4 - Iniciar Kinal-Gourmet-House
-  En la segunda terminal ejecuta:
-
-    pnpm run dev
-
-  Si todo esta correcto veras esto en la terminal:
-
-    Starting KinalGourmetHouse Admin Server...
-    MongoDB | intentando conectar a mongoDB
-    MongoDB | conectado a mongoDB
-    MongoDB | conectado a la base de datos kinalGourmetHouse
-    Kinal Gourmet House Server running on port 3006
-    Health check: http://localhost:3006/kinalGourmetHouse/v1/health
-
---------------------------------------------------------------------------------
-ORDEN DE INICIO (respeta siempre este orden)
---------------------------------------------------------------------------------
-
-  1. Docker Desktop         Iniciar primero
-  2. AuthRestaurante        pnpm run dev  (Terminal 1)
-  3. Kinal-Gourmet-House    pnpm run dev  (Terminal 2)
-
---------------------------------------------------------------------------------
-ROLES DEL SISTEMA
---------------------------------------------------------------------------------
-
-  ADMIN_GENERAL
-    - Administra toda la plataforma
-    - Se crea automáticamente al iniciar AuthRestaurante
-    - Email   : admin@system.com
-    - Password: Admin123!
-
-  ADMIN_RESTAURANTE
-    - Administra un restaurante especifico
-    - Solo el ADMIN_GENERAL puede crearlo
-
-  CLIENTE
-    - Usuario final del sistema
-    - Se registra libremente desde el endpoint /register
-
---------------------------------------------------------------------------------
-LINK DE POSTMAN
---------------------------------------------------------------------------------
-https://www.postman.com/jrealiquez-2021549-6909089/workspace/ahorcado/collection/48329923-14232fd2-5e93-4592-b4be-386c566ed2a1?action=share&creator=48329923
-
---------------------------------------------------------------------------------
-PROBAR LOS ENDPOINTS EN POSTMAN - FLUJO CORRECTO
---------------------------------------------------------------------------------
-
-Como usar el token en Postman:
-  En cada request protegida, ve a la pestana "Authorization",
-  selecciona tipo "Bearer Token" y pega el token del rol correspondiente.
-
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-PASO 1 - Login como ADMIN_GENERAL
-
-  Metodo : POST
-  URL    : http://localhost:3005/api/auth/login
-  Body   : raw / JSON
-
-  {
-    "email": "admin@system.com",
-    "password": "Admin123!"
-  }
-
-  Copia el "token" de la respuesta. Lo necesitas en el siguiente paso.
-
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-PASO 2 - Crear un ADMIN_RESTAURANTE
-
-  Metodo        : POST
-  URL           : http://localhost:3005/api/users/create-admin-restaurant
-  Authorization : Bearer Token -> pega el token del ADMIN_GENERAL
-  Body          : raw / JSON
-
-  {
-    "name": "Carlos Admin",
-    "email": "carlos@restaurante.com",
-    "password": "Admin123!"
-  }
-
-  Este usuario queda activo de inmediato, sin necesidad de verificar email.
-
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-PASO 3 - Registrar un CLIENTE
-
-  Metodo : POST
-  URL    : http://localhost:3005/api/auth/register
-  Body   : raw / JSON
-
-  {
-    "name": "Ana Cliente",
-    "email": "ana@gmail.com",
-    "password": "Cliente123!"
-  }
-
-  El cliente nace con la cuenta inactiva. Copia el "verificationToken"
-  que viene en la respuesta, lo necesitas en el siguiente paso.
-
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-PASO 4 - Verificar la cuenta del CLIENTE
-
-  Metodo : GET
-  URL    : http://localhost:3005/api/auth/verify/<verificationToken>
-
-  Reemplaza <verificationToken> con el token que copiaste en el paso anterior.
-  No lleva body ni authorization. Solo pegalo en la URL.
-
-  Respuesta esperada: { "message": "Cuenta verificada correctamente" }
-
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-PASO 5 - Login como ADMIN_RESTAURANTE
-
-  Metodo : POST
-  URL    : http://localhost:3005/api/auth/login
-  Body   : raw / JSON
-
-  {
-    "email": "carlos@restaurante.com",
-    "password": "Admin123!"
-  }
-
-  Guarda el token de la respuesta.
-
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-PASO 6 - Login como CLIENTE
-
-  Metodo : POST
-  URL    : http://localhost:3005/api/auth/login
-  Body   : raw / JSON
-
-  {
-    "email": "ana@gmail.com",
-    "password": "Cliente123!"
-  }
-
-  Guarda el token de la respuesta.
-
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-Con los 3 tokens guardados ya puedes operar en Kinal-Gourmet-House (puerto 3006).
-
---------------------------------------------------------------------------------
-ENDPOINTS DE AuthRestaurante (Puerto 3005)
---------------------------------------------------------------------------------
-
-  POST   /api/auth/register                     Publico           Registrar cliente
-  POST   /api/auth/login                        Publico           Iniciar sesion
-  GET    /api/auth/verify/:token                Publico           Verificar cuenta
-  GET    /api/auth/profile                      Token requerido   Ver perfil
-  POST   /api/users/create-admin-restaurant     ADMIN_GENERAL     Crear admin restaurante
-  PATCH  /api/users/change-password             Token requerido   Cambiar contrasena
-
---------------------------------------------------------------------------------
-ENDPOINTS DE Kinal-Gourmet-House (Puerto 3006)
---------------------------------------------------------------------------------
-
-  Base URL: http://localhost:3006/kinalGourmetHouse/v1
-
-  /auth              Proxy hacia AuthRestaurante (login y register)
-  /restaurants       ADMIN_GENERAL crea, ADMIN_RESTAURANTE actualiza
-  /tables            ADMIN_RESTAURANTE gestiona
-  /dishes            ADMIN_RESTAURANTE gestiona
-  /reservations      CLIENTE crea, ADMIN_RESTAURANTE gestiona
-  /orders            CLIENTE crea, ADMIN_RESTAURANTE actualiza estado
-  /reviews           CLIENTE crea y gestiona las suyas
-  /promotions        ADMIN_RESTAURANTE gestiona
-  /events            ADMIN_RESTAURANTE gestiona
-  /invoices          ADMIN_RESTAURANTE crea, CLIENTE consulta las suyas
-  /coupons           ADMIN_RESTAURANTE crea, CLIENTE usa
-  /notifications     Todos los roles
-  /reports           ADMIN_RESTAURANTE y ADMIN_GENERAL
-  /users             ADMIN_GENERAL
-
---------------------------------------------------------------------------------
-PERMISOS POR ROL
---------------------------------------------------------------------------------
-
-  Accion                                          CLIENTE   ADMIN_REST   ADMIN_GEN
-  Ver restaurantes, mesas y platillos               SI         SI           SI
-  Crear reservacion y pedido                        SI         SI           SI
-  Ver y cancelar sus propias reservaciones          SI         --           --
-  Crear mesas, platillos, eventos, promociones      NO         SI           SI
-  Cambiar estado de pedidos                         NO         SI           SI
-  Generar facturas                                  NO         SI           SI
-  Ver reportes del restaurante                      NO         SI           SI
-  Crear restaurantes                                NO         NO           SI
-  Crear ADMIN_RESTAURANTE                           NO         NO           SI
-  Eliminar cualquier recurso                        NO         NO           SI
-
---------------------------------------------------------------------------------
-ERRORES COMUNES Y SOLUCIONES
---------------------------------------------------------------------------------
-
-  Error: ConnectionRefusedError en AuthRestaurante
-  Causa: PostgreSQL no esta corriendo
-  Solucion: Verifica que Docker Desktop este activo y el contenedor corriendo
-
-  Error: ECONNREFUSED al iniciar Kinal-Gourmet-House
-  Causa: MongoDB no esta corriendo
-  Solucion: Inicia MongoDB y vuelve a correr la API
-
-  Error: 503 AuthRestaurante no disponible
-  Causa: Kinal no puede conectarse al puerto 3005
-  Solucion: Asegurate de haber iniciado AuthRestaurante primero y que
-            AUTH_API_URL=http://localhost:3005 este en el .env
-
-  Error: 401 Token invalido o expirado
-  Causa: El JWT vence a los 30 minutos
-  Solucion: Vuelve a hacer login y usa el nuevo token
-
-  Error: relation "role" does not exist
-  Causa: Sequelize no sincronizo las tablas
-  Solucion: Verifica que en index.js de AuthRestaurante el llamado sea
-            "await dbConnection()" con parentesis, no "await dbConnection"
-
-  Error: Usuario no aprobado al hacer login
-  Causa: El cliente no verifico su cuenta
-  Solucion: Ejecuta GET /api/auth/verify/:token con el token del registro
-
-================================================================================
-FIN DEL DOCUMENTO
-================================================================================
+ **IMPORTANTE: Cada peticion debe llevar su BEARER TOKEN correspondiente, segun sea la peticion debe ser, token de ADMIN_GENERAL, ADMIN_RESTAURANTE o CLIENTE **
