@@ -3,7 +3,7 @@ import { hashPassword, comparePassword } from '../../helpers/hash-password.js'
 import { generateJWT } from '../../helpers/generate-jwt.js'
 import { generateVerificationToken } from '../../helpers/generate-verification-token.js'
 import { sendVerificationEmail } from '../../helpers/send-email.js'
-
+import { Op } from 'sequelize'
 import jwt from 'jsonwebtoken'
 import { config } from '../../configs/config.js'
 
@@ -11,57 +11,71 @@ import { config } from '../../configs/config.js'
 export const registerUser = async (data) => {
   const { name, email, password } = data
 
-  const exists = await User.findOne({ where: { email } })
-  if (exists) throw new Error('El correo ya está registrado')
+  // Validaciones de campos vacíos
+  if (!name     || !name.trim())     throw new Error('El nombre es requerido')
+  if (!email    || !email.trim())    throw new Error('El correo es requerido')
+  if (!password || !password.trim()) throw new Error('La contraseña es requerida')
 
-  const clientRole = await Role.findOne({
-    where: { name: 'CLIENTE' }
-  })
+  // Validar longitud mínima antes de hashear
+  if (password.trim().length < 6) throw new Error('La contraseña debe tener al menos 6 caracteres')
 
-  const hashedPassword = await hashPassword(password)
+  // Verificar duplicados
+  const emailExists = await User.findOne({ where: { email: email.trim() } })
+  if (emailExists) throw new Error('El correo ya está registrado')
+
+  const clientRole = await Role.findOne({ where: { name: 'CLIENTE' } })
+  if (!clientRole) throw new Error('Rol CLIENTE no encontrado')
+
+  const hashedPassword = await hashPassword(password.trim())
 
   const user = await User.create({
-    name,
-    email,
+    name:     name.trim(),
+    email:    email.trim(),
     password: hashedPassword,
-    roleId: clientRole.id,
+    roleId:   clientRole.id,
     isActive: false
   })
 
- const verificationToken = generateVerificationToken(user)
+  const verificationToken = generateVerificationToken(user)
 
- //Enviar el correo
- await sendVerificationEmail(user.email, verificationToken)
- 
+  await sendVerificationEmail(user.email, verificationToken)
 
   const userWithoutPassword = user.toJSON()
   delete userWithoutPassword.password
 
   return {
     user: userWithoutPassword,
-    verificationToken // simulamos envío por correo
+    verificationToken
   }
 }
 
-export const loginUser = async (email, password) => {
+export const loginUser = async (identifier, password) => {
+  // Validaciones de campos vacíos
+  if (!identifier || !identifier.trim()) throw new Error('El correo o username es requerido')
+  if (!password   || !password.trim())   throw new Error('La contraseña es requerida')
+
   const user = await User.findOne({
-    where: { email },
+    where: {
+      [Op.or]: [
+        { email: identifier.trim() }
+      ]
+    },
     include: Role
   })
 
   if (!user) throw new Error('Credenciales inválidas')
 
-  const validPassword = await comparePassword(password, user.password)
+  const validPassword = await comparePassword(password.trim(), user.password)
   if (!validPassword) throw new Error('Credenciales inválidas')
 
-  if (!user.isActive) throw new Error('Usuario no aprobado')
+  if (!user.isActive) throw new Error('Cuenta no verificada. Revisa tu correo')
 
   const token = generateJWT(user)
 
-  return {
-    token,
-    user
-  }
+  const userWithoutPassword = user.toJSON()
+  delete userWithoutPassword.password
+
+  return { token, user: userWithoutPassword }
 }
 
 export const verifyAccount = async (token) => {
@@ -69,7 +83,6 @@ export const verifyAccount = async (token) => {
     const { uid } = jwt.verify(token, config.jwt.secret)
 
     const user = await User.findByPk(uid)
-
     if (!user) throw new Error('Usuario no encontrado')
 
     if (user.isActive) {
