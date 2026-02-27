@@ -35,7 +35,7 @@ orderDetailSchema.pre('validate', function () {
 const orderSchema = new mongoose.Schema(
     {
         userId: {
-            type: String,  // ⚠️ CAMBIO: String en vez de ObjectId
+            type: String,
             required: [true, 'El ID del usuario es requerido']
         },
 

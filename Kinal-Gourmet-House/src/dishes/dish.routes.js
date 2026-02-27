@@ -6,13 +6,14 @@ import { isRestaurantAdmin, isPlatformAdmin } from "../../middlewares/role.middl
 
 const router = Router();
 
-// ✅ Público: ver platillos
 router.get('/', getDishes);
+
 router.get('/:id', getDishById);
 
-// 🔒 Solo admins de restaurante pueden gestionar platillos
 router.post('/create', verifyToken, isRestaurantAdmin, uploadDishImages.single('image'), createDish);
+
 router.put('/:id', verifyToken, isRestaurantAdmin, uploadDishImages.single('image'), updateDish);
+
 router.delete('/:id', verifyToken, isRestaurantAdmin, deleteDish);
 
 export default router;

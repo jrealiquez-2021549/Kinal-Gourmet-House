@@ -6,7 +6,6 @@ export const createDish = async (req, res) => {
     try {
         const dishData = req.body;
 
-        // Procesar ingredients si viene como string
         if (typeof dishData.ingredients === 'string') {
             dishData.ingredients = dishData.ingredients.split(',').map(item => item.trim());
         }
@@ -25,7 +24,7 @@ export const createDish = async (req, res) => {
             data: dish
         });
     } catch (error) {
-        // Si hay error y se subió imagen, eliminarla de Cloudinary
+
         if (req.file && req.file.filename) {
             await cloudinary.uploader.destroy(req.file.filename).catch(err => 
                 console.error('Error al eliminar imagen:', err)
@@ -133,14 +132,11 @@ export const updateDish = async (req, res) => {
 
         const updateData = { ...req.body };
 
-        // Procesar ingredients si viene como string
         if (typeof updateData.ingredients === 'string') {
             updateData.ingredients = updateData.ingredients.split(',').map(item => item.trim());
         }
 
-        // Si se envía nueva imagen
         if (req.file) {
-            // Eliminar imagen anterior de Cloudinary si existe
             if (currentDish.image_public_id) {
                 await cloudinary.uploader.destroy(
                     currentDish.image_public_id
@@ -168,7 +164,6 @@ export const updateDish = async (req, res) => {
             data: updatedDish,
         });
     } catch (error) {
-        // Si hay error y se subió nueva imagen, eliminarla
         if (req.file && req.file.filename) {
             await cloudinary.uploader.destroy(req.file.filename).catch(err =>
                 console.error('Error al eliminar imagen:', err)
@@ -202,8 +197,7 @@ export const deleteDish = async (req, res) => {
                 message: "Platillo no encontrado",
             });
         }
-
-        // Eliminar imagen de Cloudinary si existe
+        
         if (dish.image_public_id) {
             await cloudinary.uploader.destroy(dish.image_public_id)
                 .catch(err => console.error('Error al eliminar imagen:', err));

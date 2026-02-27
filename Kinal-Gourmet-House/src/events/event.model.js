@@ -21,7 +21,6 @@ const eventSchema = mongoose.Schema(
             required: [true, 'La fecha del evento es requerida'],
             validate: {
                 validator: function(value) {
-                    // Validar que la fecha sea futura (solo en creación)
                     if (this.isNew) {
                         return value >= new Date();
                     }
@@ -43,7 +42,7 @@ const eventSchema = mongoose.Schema(
             match: [/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, 'Formato de hora inválido (HH:MM)'],
             validate: {
                 validator: function(value) {
-                    // Validar que endTime sea posterior a startTime
+
                     if (this.startTime && value) {
                         const [startHour, startMin] = this.startTime.split(':').map(Number);
                         const [endHour, endMin] = value.split(':').map(Number);
@@ -55,11 +54,6 @@ const eventSchema = mongoose.Schema(
                 },
                 message: 'La hora de fin debe ser posterior a la hora de inicio'
             }
-        },
-        specialMenu: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'Menu',
-            default: null
         },
         additionalServices: {
             type: [String],

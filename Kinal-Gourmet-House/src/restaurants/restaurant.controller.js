@@ -7,7 +7,7 @@ import { cloudinary } from '../../middlewares/files-uploaders.js';
 export const createRestaurant = async (req, res) => {
     try {
         const restaurantData = req.body;
-        // Asignar dueño desde el token de autenticación
+
         restaurantData.ownerUserId = req.user.id;
         restaurantData.ownerInfo = { name: req.user.name, email: req.user.email };
 
@@ -25,7 +25,7 @@ export const createRestaurant = async (req, res) => {
             data: restaurant
         });
     } catch (error) {
-        // Si hay error y se subió imagen, eliminarla de Cloudinary
+
         if (req.file && req.file.filename) {
             await cloudinary.uploader.destroy(req.file.filename).catch(err => 
                 console.error('Error al eliminar imagen:', err)
@@ -77,7 +77,6 @@ export const getRestaurantById = async (req, res) => {
     try {
         const { id } = req.params;
         
-        // Validar ObjectId
         if (!mongoose.Types.ObjectId.isValid(id)) {
             return res.status(400).json({
                 success: false,
@@ -129,9 +128,8 @@ export const updateRestaurant = async (req, res) => {
 
         const updateData = { ...req.body };
 
-        // Si se envía nueva imagen
         if (req.file) {
-            // Eliminar imagen anterior de Cloudinary si existe
+
             if (currentRestaurant.images_public_id) {
                 await cloudinary.uploader.destroy(
                     currentRestaurant.images_public_id
@@ -157,7 +155,7 @@ export const updateRestaurant = async (req, res) => {
             data: updatedRestaurant,
         });
     } catch (error) {
-        // Si hay error y se subió nueva imagen, eliminarla
+
         if (req.file && req.file.filename) {
             await cloudinary.uploader.destroy(req.file.filename).catch(err =>
                 console.error('Error al eliminar imagen:', err)
@@ -191,8 +189,7 @@ export const deleteRestaurant = async (req, res) => {
                 message: "Restaurante no encontrado",
             });
         }
-
-        // Eliminar imagen de Cloudinary si existe
+        
         if (restaurant.images_public_id) {
             await cloudinary.uploader.destroy(restaurant.images_public_id)
                 .catch(err => console.error('Error al eliminar imagen:', err));

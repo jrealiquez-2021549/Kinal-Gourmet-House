@@ -15,22 +15,20 @@ import { isPlatformAdmin, isRestaurantAdmin } from "../../middlewares/role.middl
 
 const router = Router();
 
-// Rutas públicas
 router.post(
     '/validate', 
     validateCoupon
-); // Validar cupón antes de aplicarlo
+);
 
 router.get(
     '/code/:code',
     getCouponByCode
-); // Buscar cupón por código
+);
 
-// Rutas protegidas - Solo administradores
 router.post(
     '/create',
     verifyToken,
-    isRestaurantAdmin, // REST_ADMIN o PLATFORM_ADMIN
+    isRestaurantAdmin,
     createCoupon
 );
 
@@ -56,11 +54,10 @@ router.put(
 router.delete(
     '/:id',
     verifyToken,
-    isPlatformAdmin, // Solo admin de plataforma puede eliminar
+    isPlatformAdmin,
     deleteCoupon
 );
 
-// Historial de uso
 router.get(
     '/:id/usage',
     verifyToken,

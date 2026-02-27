@@ -76,8 +76,7 @@ export const updateReview = async (req, res) => {
 
         const review = await Review.findById(id);
         if (!review) return res.status(404).json({ success: false, message: 'Reseña no encontrada' });
-
-        // Solo el dueño o admin puede editar
+        
         if (req.user.role === 'CLIENTE' && review.userId !== req.user.id) {
             return res.status(403).json({ success: false, message: 'Solo puedes editar tus propias reseñas' });
         }

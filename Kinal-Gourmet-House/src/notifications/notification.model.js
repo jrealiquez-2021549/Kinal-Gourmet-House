@@ -18,18 +18,18 @@ const notificationSchema = mongoose.Schema(
             required: [true, 'El tipo de notificación es requerido'],
             enum: {
                 values: [
-                    'RESERVATION_CONFIRMED',    // Reservación confirmada
-                    'RESERVATION_CANCELLED',    // Reservación cancelada
-                    'RESERVATION_REMINDER',     // Recordatorio de reservación
-                    'ORDER_CONFIRMED',          // Pedido confirmado
-                    'ORDER_READY',              // Pedido listo
-                    'ORDER_ON_WAY',             // Pedido en camino (delivery)
-                    'ORDER_DELIVERED',          // Pedido entregado
-                    'ORDER_CANCELLED',          // Pedido cancelado
-                    'PROMOTION_AVAILABLE',      // Nueva promoción disponible
-                    'EVENT_REMINDER',           // Recordatorio de evento
-                    'COUPON_EXPIRING',          // Cupón por vencer
-                    'GENERAL'                   // Notificación general
+                    'RESERVATION_CONFIRMED',
+                    'RESERVATION_CANCELLED',
+                    'RESERVATION_REMINDER',
+                    'ORDER_CONFIRMED',
+                    'ORDER_READY',
+                    'ORDER_ON_WAY',
+                    'ORDER_DELIVERED',
+                    'ORDER_CANCELLED',
+                    'PROMOTION_AVAILABLE',
+                    'EVENT_REMINDER',
+                    'COUPON_EXPIRING',
+                    'GENERAL'
                 ],
                 message: 'Tipo de notificación no válido'
             }
@@ -49,7 +49,6 @@ const notificationSchema = mongoose.Schema(
             maxLength: [500, 'El mensaje no puede exceder 500 caracteres']
         },
 
-        // Referencia al recurso relacionado (opcional)
         relatedResource: {
             resourceType: {
                 type: String,
@@ -61,7 +60,6 @@ const notificationSchema = mongoose.Schema(
             }
         },
 
-        // Datos adicionales (JSON)
         metadata: {
             type: mongoose.Schema.Types.Mixed,
             default: {}
@@ -77,21 +75,18 @@ const notificationSchema = mongoose.Schema(
             default: null
         },
 
-        // Prioridad
         priority: {
             type: String,
             enum: ['LOW', 'MEDIUM', 'HIGH', 'URGENT'],
             default: 'MEDIUM'
         },
 
-        // Canal de envío
         channel: {
             type: String,
             enum: ['IN_APP', 'EMAIL', 'SMS', 'PUSH'],
             default: 'IN_APP'
         },
 
-        // Estado de envío (para email/sms/push)
         sent: {
             type: Boolean,
             default: false
@@ -102,7 +97,6 @@ const notificationSchema = mongoose.Schema(
             default: null
         },
 
-        // Fecha de expiración (opcional)
         expiresAt: {
             type: Date,
             default: null
@@ -114,20 +108,17 @@ const notificationSchema = mongoose.Schema(
     }
 );
 
-// Índices
 notificationSchema.index({ userId: 1, isRead: 1 });
 notificationSchema.index({ userId: 1, createdAt: -1 });
 notificationSchema.index({ type: 1 });
 notificationSchema.index({ priority: 1 });
 notificationSchema.index({ expiresAt: 1 });
 
-// Virtual para verificar si está expirada
 notificationSchema.virtual('isExpired').get(function() {
     if (!this.expiresAt) return false;
     return new Date() > this.expiresAt;
 });
 
-// Método para marcar como leída
 notificationSchema.methods.markAsRead = async function() {
     if (!this.isRead) {
         this.isRead = true;
@@ -137,7 +128,6 @@ notificationSchema.methods.markAsRead = async function() {
     return this;
 };
 
-// Método estático para crear notificación de pedido
 notificationSchema.statics.createOrderNotification = async function(order, type) {
     const titles = {
         'ORDER_CONFIRMED': 'Pedido Confirmado',
@@ -173,7 +163,6 @@ notificationSchema.statics.createOrderNotification = async function(order, type)
     });
 };
 
-// Método estático para crear notificación de reservación
 notificationSchema.statics.createReservationNotification = async function(reservation, type) {
     const titles = {
         'RESERVATION_CONFIRMED': 'Reservación Confirmada',
@@ -209,7 +198,6 @@ notificationSchema.statics.createReservationNotification = async function(reserv
     });
 };
 
-// Incluir virtuals
 notificationSchema.set('toJSON', { virtuals: true });
 notificationSchema.set('toObject', { virtuals: true });
 

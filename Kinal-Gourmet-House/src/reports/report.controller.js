@@ -7,9 +7,6 @@ import Review from '../reviews/review.model.js';
 import Dish from '../dishes/dish.model.js';
 import mongoose from 'mongoose';
 
-/**
- * Reporte de ventas por restaurante
- */
 export const getSalesReport = async (req, res) => {
     try {
         const { restaurantId, startDate, endDate, groupBy = 'day' } = req.query;
@@ -36,10 +33,9 @@ export const getSalesReport = async (req, res) => {
                     message: 'ID de restaurante inválido'
                 });
             }
-            filter.restaurant = mongoose.Types.ObjectId(restaurantId);
+            filter.restaurant = new mongoose.Types.ObjectId(restaurantId);
         }
 
-        // Formato de agrupación
         let dateFormat;
         switch (groupBy) {
             case 'hour':
@@ -73,7 +69,6 @@ export const getSalesReport = async (req, res) => {
             { $sort: { _id: 1 } }
         ]);
 
-        // Resumen general
         const summary = await Order.aggregate([
             { $match: filter },
             {
@@ -106,9 +101,6 @@ export const getSalesReport = async (req, res) => {
     }
 };
 
-/**
- * Platillos más vendidos
- */
 export const getTopDishes = async (req, res) => {
     try {
         const { restaurantId, startDate, endDate, limit = 10 } = req.query;
@@ -125,7 +117,7 @@ export const getTopDishes = async (req, res) => {
         }
 
         if (restaurantId) {
-            matchFilter.restaurant = mongoose.Types.ObjectId(restaurantId);
+            matchFilter.restaurant = new mongoose.Types.ObjectId(restaurantId);
         }
 
         const topDishes = await Order.aggregate([
@@ -179,9 +171,6 @@ export const getTopDishes = async (req, res) => {
     }
 };
 
-/**
- * Horas pico (mayor demanda)
- */
 export const getPeakHours = async (req, res) => {
     try {
         const { restaurantId, startDate, endDate } = req.query;
@@ -196,7 +185,7 @@ export const getPeakHours = async (req, res) => {
         }
 
         if (restaurantId) {
-            filter.restaurant = mongoose.Types.ObjectId(restaurantId);
+            filter.restaurant = new mongoose.Types.ObjectId(restaurantId);
         }
 
         const peakHours = await Order.aggregate([
@@ -233,9 +222,6 @@ export const getPeakHours = async (req, res) => {
     }
 };
 
-/**
- * Estadísticas de reservaciones
- */
 export const getReservationStats = async (req, res) => {
     try {
         const { restaurantId, startDate, endDate } = req.query;
@@ -250,7 +236,7 @@ export const getReservationStats = async (req, res) => {
         }
 
         if (restaurantId) {
-            filter.restaurant = mongoose.Types.ObjectId(restaurantId);
+            filter.restaurant = new mongoose.Types.ObjectId(restaurantId);
         }
 
         const stats = await Reservation.aggregate([
@@ -283,9 +269,6 @@ export const getReservationStats = async (req, res) => {
     }
 };
 
-/**
- * Reporte de satisfacción del cliente
- */
 export const getCustomerSatisfactionReport = async (req, res) => {
     try {
         const { restaurantId, startDate, endDate } = req.query;
@@ -300,10 +283,9 @@ export const getCustomerSatisfactionReport = async (req, res) => {
         }
 
         if (restaurantId) {
-            filter.restaurant = mongoose.Types.ObjectId(restaurantId);
+            filter.restaurant = new mongoose.Types.ObjectId(restaurantId);
         }
 
-        // Promedio de calificaciones en reseñas
         const reviewStats = await Review.aggregate([
             { $match: filter },
             {
@@ -327,7 +309,6 @@ export const getCustomerSatisfactionReport = async (req, res) => {
             { $unwind: { path: '$restaurant', preserveNullAndEmptyArrays: true } }
         ]);
 
-        // Distribución de calificaciones
         const ratingDistribution = await Review.aggregate([
             { $match: filter },
             {
@@ -339,13 +320,12 @@ export const getCustomerSatisfactionReport = async (req, res) => {
             { $sort: { _id: -1 } }
         ]);
 
-        // Calificaciones de pedidos entregados
         const orderRatings = await Order.aggregate([
             {
                 $match: {
                     status: 'ENTREGADO',
                     rating: { $exists: true, $ne: null },
-                    ...(restaurantId && { restaurant: mongoose.Types.ObjectId(restaurantId) }),
+                    ...(restaurantId && { restaurant: new mongoose.Types.ObjectId(restaurantId) }),
                     ...(startDate && endDate && {
                         createdAt: {
                             $gte: new Date(startDate),
@@ -386,9 +366,6 @@ export const getCustomerSatisfactionReport = async (req, res) => {
     }
 };
 
-/**
- * Dashboard general del restaurante
- */
 export const getRestaurantDashboard = async (req, res) => {
     try {
         const { restaurantId } = req.params;
@@ -406,17 +383,15 @@ export const getRestaurantDashboard = async (req, res) => {
         const tomorrow = new Date(today);
         tomorrow.setDate(tomorrow.getDate() + 1);
 
-        // Pedidos de hoy
         const todayOrders = await Order.countDocuments({
             restaurant: restaurantId,
             createdAt: { $gte: today, $lt: tomorrow }
         });
 
-        // Ingresos de hoy
         const todayRevenue = await Order.aggregate([
             {
                 $match: {
-                    restaurant: mongoose.Types.ObjectId(restaurantId),
+                    restaurant: new mongoose.Types.ObjectId(restaurantId),
                     createdAt: { $gte: today, $lt: tomorrow },
                     status: 'ENTREGADO'
                 }
@@ -429,20 +404,17 @@ export const getRestaurantDashboard = async (req, res) => {
             }
         ]);
 
-        // Reservaciones de hoy
         const todayReservations = await Reservation.countDocuments({
             restaurant: restaurantId,
             date: { $gte: today, $lt: tomorrow },
             status: { $in: ['PENDING', 'CONFIRMED'] }
         });
 
-        // Calificación promedio
         const avgRating = await Review.aggregate([
-            { $match: { restaurant: mongoose.Types.ObjectId(restaurantId) } },
+            { $match: { restaurant: new mongoose.Types.ObjectId(restaurantId) } },
             { $group: { _id: null, avgRating: { $avg: '$rating' } } }
         ]);
-
-        // Pedidos activos
+        
         const activeOrders = await Order.countDocuments({
             restaurant: restaurantId,
             status: { $in: ['PENDIENTE', 'CONFIRMADO', 'EN_PREPARACION'] }

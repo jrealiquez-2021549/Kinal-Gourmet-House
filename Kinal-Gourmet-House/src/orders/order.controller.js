@@ -38,6 +38,42 @@ export const createOrder = async (req, res) => {
         details.forEach(item => {
             totalPrice += item.quantity * item.unitPrice;
         });
+        
+        let discount = 0;
+        let appliedCoupon = null;
+
+        if (couponCode) {
+            const Coupon = mongoose.model('Coupon');
+            const coupon = await Coupon.findOne({ code: couponCode.toUpperCase() });
+
+            if (!coupon) {
+                return res.status(404).json({
+                    success: false,
+                    message: 'El cupón ingresado no existe'
+                });
+            }
+
+            const validation = await coupon.validateForUse(req.user.id, restaurant, totalPrice);
+
+            if (!validation.valid) {
+                return res.status(400).json({
+                    success: false,
+                    message: validation.message
+                });
+            }
+
+            if (coupon.discountType === 'PERCENTAGE') {
+                discount = totalPrice * (coupon.discountValue / 100);
+                if (coupon.maxDiscount && discount > coupon.maxDiscount) {
+                    discount = coupon.maxDiscount;
+                }
+            } else {
+                discount = coupon.discountValue;
+            }
+
+            discount = Math.min(discount, totalPrice);
+            appliedCoupon = coupon._id;
+        }
 
         const order = new Order({
             userId: req.user.id,
@@ -49,12 +85,20 @@ export const createOrder = async (req, res) => {
             table: table || undefined,
             orderType: orderType || 'EN_MESA',
             details,
-            totalPrice,
+            totalPrice: totalPrice - discount,
+            discount,
+            appliedCoupon: appliedCoupon || undefined,
             deliveryAddress: deliveryAddress || undefined,
             deliveryPhone: deliveryPhone || undefined
         });
 
         await order.save();
+
+        if (appliedCoupon) {
+            const Coupon = mongoose.model('Coupon');
+            const coupon = await Coupon.findById(appliedCoupon);
+            await coupon.recordUsage(req.user.id, order._id);
+        }
 
         res.status(201).json({
             success: true,
@@ -79,7 +123,6 @@ export const getOrders = async (req, res) => {
         if (status) filter.status = status;
         if (restaurant) filter.restaurant = restaurant;
 
-        // Clientes solo ven sus propios pedidos
         if (req.user.role === 'CLIENTE') {
             filter.userId = req.user.id;
         }
@@ -131,7 +174,6 @@ export const getOrderById = async (req, res) => {
             return res.status(404).json({ success: false, message: "Pedido no encontrado" });
         }
 
-        // Clientes solo pueden ver sus propios pedidos
         if (req.user.role === 'CLIENTE' && order.userId !== req.user.id) {
             return res.status(403).json({ success: false, message: "No tienes acceso a este pedido" });
         }
@@ -156,7 +198,6 @@ export const updateOrder = async (req, res) => {
             return res.status(404).json({ success: false, message: "Pedido no encontrado" });
         }
 
-        // Clientes solo pueden modificar sus propios pedidos y solo si está PENDIENTE
         if (req.user.role === 'CLIENTE') {
             if (currentOrder.userId !== req.user.id) {
                 return res.status(403).json({ success: false, message: "No tienes acceso a este pedido" });
@@ -172,7 +213,6 @@ export const updateOrder = async (req, res) => {
             req.body.totalPrice = totalPrice;
         }
 
-        // Proteger campos que no deben modificarse
         delete req.body.userId;
         delete req.body.userInfo;
 
@@ -247,8 +287,7 @@ export const cancelOrder = async (req, res) => {
         if (!order) {
             return res.status(404).json({ success: false, message: "Pedido no encontrado" });
         }
-
-        // Clientes solo pueden cancelar sus propios pedidos
+        
         if (req.user.role === 'CLIENTE' && order.userId !== req.user.id) {
             return res.status(403).json({ success: false, message: "No tienes acceso a este pedido" });
         }

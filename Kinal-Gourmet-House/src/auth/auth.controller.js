@@ -16,11 +16,6 @@ const authError = (res, error) => {
     return res.status(status).json({ success: false, message: msg });
 };
 
-/**
- * POST /kinalGourmetHouse/v1/auth/login
- * Reenvía el login a AuthRestaurante y devuelve su token.
- * Body: { email, password }
- */
 export const login = async (req, res) => {
     try {
         const response = await axios.post(`${AUTH_API_URL}/api/auth/login`, req.body);
@@ -30,11 +25,6 @@ export const login = async (req, res) => {
     }
 };
 
-/**
- * POST /kinalGourmetHouse/v1/auth/register
- * Reenvía el registro a AuthRestaurante.
- * Body: { name, email, password }
- */
 export const register = async (req, res) => {
     try {
         const response = await axios.post(`${AUTH_API_URL}/api/auth/register`, req.body);
@@ -44,10 +34,6 @@ export const register = async (req, res) => {
     }
 };
 
-/**
- * GET /kinalGourmetHouse/v1/auth/profile
- * Devuelve el perfil del usuario autenticado (requiere token).
- */
 export const profile = async (req, res) => {
     return res.status(200).json({
         success: true,

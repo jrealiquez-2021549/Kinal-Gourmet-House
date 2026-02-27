@@ -9,7 +9,7 @@ const couponUsageSchema = mongoose.Schema(
             ref: 'Coupon',
             required: [true, 'La referencia al cupón es requerida']
         },
-        // userId como String (viene de AuthRestaurante)
+        
         userId: {
             type: String,
             required: [true, 'El ID del usuario es requerido']

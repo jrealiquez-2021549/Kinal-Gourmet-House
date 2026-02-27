@@ -29,7 +29,6 @@ export const getPromotions = async (req, res) => {
         if (isActive !== undefined) filter.isActive = isActive === 'true';
         if (restaurant) filter.restaurant = restaurant;
         
-        // Filtrar promociones vigentes
         if (current === 'true') {
             const now = new Date();
             filter.startDate = { $lte: now };
