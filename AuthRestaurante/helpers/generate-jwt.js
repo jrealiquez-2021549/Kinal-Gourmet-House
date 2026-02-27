@@ -5,7 +5,8 @@ export const generateJWT = (user) => {
   return jwt.sign(
     {
       uid: user.id,
-      role: user.roleId
+      role: user.roleId,
+      restaurantId: user.restaurantId || null
     },
     config.jwt.secret,
     {

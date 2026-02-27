@@ -37,7 +37,8 @@ export const verifyToken = async (req, res, next) => {
             id:    userData.id,
             email: userData.email,
             name:  userData.name,
-            role:  userData.role?.name || userData.Role?.name || userData.role
+            role:  userData.role?.name || userData.Role?.name || userData.role,
+            restaurantId: userData.restaurantId || null
         };
 
         next();

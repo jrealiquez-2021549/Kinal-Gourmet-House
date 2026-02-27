@@ -32,6 +32,11 @@ export const getTables = async (req, res) => {
         if (location) filter.location = location;
         if (restaurant) filter.restaurant = restaurant;
 
+        // ADMIN_RESTAURANTE solo ve los de su propio restaurante
+        if (req.user && req.user.role === 'ADMIN_RESTAURANTE') {
+            filter.restaurant = req.user.restaurantId;
+        }
+
         const tables = await Table.find(filter)
             .populate('restaurant', 'name address phone')
             .limit(limit * 1)

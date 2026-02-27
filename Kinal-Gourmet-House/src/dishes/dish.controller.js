@@ -48,6 +48,11 @@ export const getDishes = async (req, res) => {
         if (type) filter.type = type;
         if (restaurant) filter.restaurant = restaurant;
 
+        // ADMIN_RESTAURANTE solo ve los de su propio restaurante
+        if (req.user && req.user.role === 'ADMIN_RESTAURANTE') {
+            filter.restaurant = req.user.restaurantId;
+        }
+
         const dishes = await Dish.find(filter)
             .populate('restaurant', 'name address')
             .limit(limit * 1)

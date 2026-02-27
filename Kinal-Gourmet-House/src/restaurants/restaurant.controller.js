@@ -42,9 +42,21 @@ export const createRestaurant = async (req, res) => {
 
 export const getRestaurants = async (req, res) => {
     try {
-        const { page = 1, limit = 10, status = 'ACTIVE' } = req.query;
+        const { page = 1, limit = 10, status } = req.query;
 
-        const filter = { status };
+        const filter = {};
+        if (status) filter.status = status;
+
+        // ADMIN_RESTAURANTE solo ve su propio restaurante
+        if (req.user && req.user.role === 'ADMIN_RESTAURANTE') {
+            if (!req.user.restaurantId) {
+                return res.status(403).json({
+                    success: false,
+                    message: 'No tienes un restaurante asignado.'
+                });
+            }
+            filter._id = req.user.restaurantId;
+        }
 
         const restaurants = await Restaurant.find(filter)
             

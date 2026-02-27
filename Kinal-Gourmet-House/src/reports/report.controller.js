@@ -9,7 +9,12 @@ import mongoose from 'mongoose';
 
 export const getSalesReport = async (req, res) => {
     try {
-        const { restaurantId, startDate, endDate, groupBy = 'day' } = req.query;
+        let { restaurantId, startDate, endDate, groupBy = 'day' } = req.query;
+
+        // ADMIN_RESTAURANTE solo puede ver reportes de su restaurante
+        if (req.user && req.user.role === 'ADMIN_RESTAURANTE') {
+            restaurantId = req.user.restaurantId;
+        }
 
         if (!startDate || !endDate) {
             return res.status(400).json({
@@ -103,7 +108,12 @@ export const getSalesReport = async (req, res) => {
 
 export const getTopDishes = async (req, res) => {
     try {
-        const { restaurantId, startDate, endDate, limit = 10 } = req.query;
+        let { restaurantId, startDate, endDate, limit = 10 } = req.query;
+
+        // ADMIN_RESTAURANTE solo puede ver reportes de su restaurante
+        if (req.user && req.user.role === 'ADMIN_RESTAURANTE') {
+            restaurantId = req.user.restaurantId;
+        }
 
         const matchFilter = {
             status: 'ENTREGADO'
@@ -173,9 +183,14 @@ export const getTopDishes = async (req, res) => {
 
 export const getPeakHours = async (req, res) => {
     try {
-        const { restaurantId, startDate, endDate } = req.query;
+        let { restaurantId, startDate, endDate } = req.query;
 
         const filter = {};
+
+        // ADMIN_RESTAURANTE solo puede ver reportes de su restaurante
+        if (req.user && req.user.role === 'ADMIN_RESTAURANTE') {
+            restaurantId = req.user.restaurantId;
+        }
 
         if (startDate && endDate) {
             filter.createdAt = {
@@ -224,9 +239,14 @@ export const getPeakHours = async (req, res) => {
 
 export const getReservationStats = async (req, res) => {
     try {
-        const { restaurantId, startDate, endDate } = req.query;
+        let { restaurantId, startDate, endDate } = req.query;
 
         const filter = {};
+
+        // ADMIN_RESTAURANTE solo puede ver reportes de su restaurante
+        if (req.user && req.user.role === 'ADMIN_RESTAURANTE') {
+            restaurantId = req.user.restaurantId;
+        }
 
         if (startDate && endDate) {
             filter.date = {
@@ -271,9 +291,14 @@ export const getReservationStats = async (req, res) => {
 
 export const getCustomerSatisfactionReport = async (req, res) => {
     try {
-        const { restaurantId, startDate, endDate } = req.query;
+        let { restaurantId, startDate, endDate } = req.query;
 
         const filter = {};
+
+        // ADMIN_RESTAURANTE solo puede ver reportes de su restaurante
+        if (req.user && req.user.role === 'ADMIN_RESTAURANTE') {
+            restaurantId = req.user.restaurantId;
+        }
 
         if (startDate && endDate) {
             filter.date = {
