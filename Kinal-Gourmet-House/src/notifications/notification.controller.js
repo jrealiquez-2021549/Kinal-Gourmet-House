@@ -32,9 +32,7 @@ export const getNotifications = async (req, res) => {
             type,
             priority 
         } = req.query;
-        
-        // Solo el usuario puede ver sus propias notificaciones
-        // A menos que sea admin de plataforma
+
         const filter = {};
         
         if (req.user.role !== 'ADMIN_GENERAL') {
@@ -47,7 +45,6 @@ export const getNotifications = async (req, res) => {
         if (type) filter.type = type;
         if (priority) filter.priority = priority;
 
-        // No mostrar notificaciones expiradas
         filter.$or = [
             { expiresAt: null },
             { expiresAt: { $gt: new Date() } }
@@ -108,7 +105,6 @@ export const getNotificationById = async (req, res) => {
             });
         }
 
-        // Verificar que el usuario puede acceder a esta notificación
         if (req.user.role !== 'ADMIN_GENERAL' && 
             notification.userId !== req.user.id) {
             return res.status(403).json({
@@ -150,7 +146,6 @@ export const markAsRead = async (req, res) => {
             });
         }
 
-        // Verificar permisos
         if (req.user.role !== 'ADMIN_GENERAL' && 
             notification.userId !== req.user.id) {
             return res.status(403).json({
@@ -222,8 +217,7 @@ export const deleteNotification = async (req, res) => {
                 message: "Notificación no encontrada",
             });
         }
-
-        // Verificar permisos
+        
         if (req.user.role !== 'ADMIN_GENERAL' && 
             notification.userId !== req.user.id) {
             return res.status(403).json({

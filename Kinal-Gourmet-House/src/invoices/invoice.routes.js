@@ -5,17 +5,18 @@ import { isRestaurantAdmin, isPlatformAdmin } from "../../middlewares/role.middl
 
 const router = Router();
 
-// 🔒 Todas las rutas requieren autenticación
 router.use(verifyToken);
 
-// Clientes pueden ver sus propias facturas; admins ven todas
 router.get('/', getInvoices);
+
 router.get('/number/:invoiceNumber', getInvoiceByNumber);
+
 router.get('/:id', getInvoiceById);
 
-// Solo admins de restaurante generan/modifican facturas
 router.post('/create', isRestaurantAdmin, createInvoice);
+
 router.put('/:id', isRestaurantAdmin, updateInvoice);
+
 router.delete('/:id', isPlatformAdmin, deleteInvoice);
 
 export default router;

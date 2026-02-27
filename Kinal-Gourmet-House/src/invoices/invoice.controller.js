@@ -40,8 +40,7 @@ export const createInvoice = async (req, res) => {
         if (existingInvoice) {
             return res.status(400).json({ success: false, message: 'Ya existe una factura para esta orden' });
         }
-
-        // Calcular montos
+        
         const sub    = subtotal || 0;
         const tax    = sub * ((taxRate || 0) / 100);
         const desc   = discount || 0;

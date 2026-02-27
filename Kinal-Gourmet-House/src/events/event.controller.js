@@ -5,7 +5,6 @@ export const createEvent = async (req, res) => {
     try {
         const eventData = req.body;
 
-        // Procesar additionalServices si viene como string
         if (typeof eventData.additionalServices === 'string') {
             eventData.additionalServices = eventData.additionalServices
                 .split(',')
@@ -18,7 +17,6 @@ export const createEvent = async (req, res) => {
 
         const populatedEvent = await Event.findById(event._id)
             .populate('restaurant', 'name address phone')
-            .populate('specialMenu', 'name description');
 
         res.status(201).json({
             success: true,
@@ -48,12 +46,10 @@ export const getEvents = async (req, res) => {
         
         const filter = {};
         
-        // Filtros básicos
         if (isActive !== undefined) filter.isActive = isActive === 'true';
         if (status) filter.status = status;
         if (restaurant) filter.restaurant = restaurant;
         
-        // Filtro para eventos próximos (próximos 30 días)
         if (upcoming === 'true') {
             const now = new Date();
             const thirtyDaysFromNow = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
@@ -61,7 +57,6 @@ export const getEvents = async (req, res) => {
             filter.isActive = true;
         }
         
-        // Filtro para eventos pasados
         if (past === 'true') {
             filter.date = { $lt: new Date() };
         }
@@ -71,7 +66,7 @@ export const getEvents = async (req, res) => {
             .populate('specialMenu', 'name description price')
             .limit(limit * 1)
             .skip((page - 1) * limit)
-            .sort({ date: 1 }); // Ordenar por fecha ascendente
+            .sort({ date: 1 });
 
         const total = await Event.countDocuments(filter);
 
@@ -197,8 +192,7 @@ export const updateEvent = async (req, res) => {
         }
 
         const updateData = { ...req.body };
-
-        // Procesar additionalServices si viene como string
+        
         if (typeof updateData.additionalServices === 'string') {
             updateData.additionalServices = updateData.additionalServices
                 .split(',')

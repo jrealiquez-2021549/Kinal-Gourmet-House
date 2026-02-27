@@ -4,14 +4,6 @@ import UserCache from './user.model.js';
 import mongoose from 'mongoose';
 import { cloudinary } from '../../middlewares/files-uploaders.js';
 
-/**
- * Sincronizar / registrar perfil extendido de un usuario
- * que ya existe en AuthRestaurante.
- * POST /users/sync
- * Solo ADMIN_GENERAL puede crear entradas manualmente.
- * Normalmente se crea automáticamente cuando el usuario opera
- * por primera vez (lazy sync).
- */
 export const createUser = async (req, res) => {
     try {
         const { authId, name, email, role, phone } = req.body;
@@ -84,7 +76,6 @@ export const getUserById = async (req, res) => {
     try {
         const { id } = req.params;
 
-        // Puede buscarse por MongoDB _id o por authId
         let user;
         if (mongoose.Types.ObjectId.isValid(id)) {
             user = await UserCache.findById(id).select('-profileImage_public_id');
@@ -106,7 +97,6 @@ export const updateUser = async (req, res) => {
     try {
         const { id } = req.params;
 
-        // Solo puede actualizarse su propio perfil o ADMIN_GENERAL actualiza cualquiera
         const isOwner = req.user.id === id;
         const isAdmin = req.user.role === 'ADMIN_GENERAL';
 
@@ -117,11 +107,10 @@ export const updateUser = async (req, res) => {
             });
         }
 
-        // Campos que NO se pueden cambiar aquí (los maneja AuthRestaurante)
         const { authId, role, ...updateData } = req.body;
 
         if (req.file) {
-            // Eliminar imagen anterior si existe
+
             const existing = await UserCache.findOne({ authId: id });
             if (existing?.profileImage_public_id) {
                 await cloudinary.uploader.destroy(existing.profileImage_public_id).catch(() => {});
@@ -154,8 +143,7 @@ export const deleteUser = async (req, res) => {
         if (!user) {
             return res.status(404).json({ success: false, message: 'Usuario no encontrado' });
         }
-
-        // Eliminar imagen de Cloudinary si existe
+        
         if (user.profileImage_public_id) {
             await cloudinary.uploader.destroy(user.profileImage_public_id).catch(() => {});
         }

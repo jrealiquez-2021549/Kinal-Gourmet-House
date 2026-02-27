@@ -100,7 +100,6 @@ const invoiceSchema = mongoose.Schema(
     }
 );
 
-// ─── Índices (sin duplicados) ───────────────────────────────────────────────
 invoiceSchema.index({ paymentStatus: 1 });
 invoiceSchema.index({ issuedAt: 1 });
 invoiceSchema.index({ userId: 1, issuedAt: -1 });
@@ -108,7 +107,6 @@ invoiceSchema.index({ restaurant: 1, issuedAt: -1 });
 invoiceSchema.index({ paymentMethod: 1 });
 invoiceSchema.index({ invoiceType: 1 });
 
-// ─── Pre-save: número de factura automático ─────────────────────────────────
 invoiceSchema.pre('save', async function() {
     if (!this.invoiceNumber) {
         const count = await mongoose.model('Invoice').countDocuments();
@@ -124,7 +122,6 @@ invoiceSchema.pre('save', async function() {
     }
 });
 
-// ─── Virtual: saldo pendiente ───────────────────────────────────────────────
 invoiceSchema.virtual('balanceDue').get(function() {
     return Math.max(0, this.totalAmount - this.amountPaid);
 });

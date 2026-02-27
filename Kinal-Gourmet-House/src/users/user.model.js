@@ -1,21 +1,9 @@
 'use strict';
 
-/**
- * UserCache — modelo de MongoDB para Kinal-Gourmet-House
- *
- * NO almacena contraseñas ni genera tokens.
- * Sirve como referencia local de usuarios cuya autenticación
- * vive en AuthRestaurante (PostgreSQL, puerto 3005).
- *
- * Se usa para guardar datos de perfil extra como foto de perfil
- * o preferencias que no existen en AuthRestaurante.
- */
-
 import mongoose from 'mongoose';
 
 const userCacheSchema = mongoose.Schema(
     {
-        // authId: el UUID que asigna AuthRestaurante al usuario
         authId: {
             type: String,
             required: [true, 'El ID de AuthRestaurante es requerido'],

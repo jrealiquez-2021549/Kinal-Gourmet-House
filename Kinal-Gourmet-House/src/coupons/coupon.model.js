@@ -45,14 +45,12 @@ const couponSchema = mongoose.Schema(
             }
         },
 
-        // Descuento máximo en dinero (útil para porcentajes)
         maxDiscount: {
             type: Number,
             min: [0, 'El descuento máximo no puede ser negativo'],
             default: null
         },
 
-        // Monto mínimo de compra para aplicar el cupón
         minPurchaseAmount: {
             type: Number,
             min: [0, 'El monto mínimo no puede ser negativo'],
@@ -76,40 +74,34 @@ const couponSchema = mongoose.Schema(
             }
         },
 
-        // Límite de usos totales (null = ilimitado)
         usageLimit: {
             type: Number,
             min: [1, 'El límite de uso debe ser al menos 1'],
             default: null
         },
 
-        // Cantidad de veces que ya se ha usado
         usedCount: {
             type: Number,
             min: [0, 'El contador de uso no puede ser negativo'],
             default: 0
         },
 
-        // Límite de uso por usuario (null = ilimitado)
         usageLimitPerUser: {
             type: Number,
             min: [1, 'El límite por usuario debe ser al menos 1'],
             default: 1
         },
 
-        // Restaurantes donde aplica (vacío = todos)
         applicableRestaurants: [{
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Restaurant'
         }],
 
-        // Tipo de pedido donde aplica (vacío = todos)
         applicableOrderTypes: [{
             type: String,
             enum: ['EN_MESA', 'PARA_LLEVAR', 'DOMICILIO']
         }],
 
-        // Solo para nuevos usuarios
         newUsersOnly: {
             type: Boolean,
             default: false
@@ -120,7 +112,6 @@ const couponSchema = mongoose.Schema(
             default: true
         },
 
-        // Usuario que creó el cupón (ID como string desde AuthRestaurante)
         createdByUserId: {
             type: String,
             required: true
@@ -136,21 +127,18 @@ const couponSchema = mongoose.Schema(
     }
 );
 
-// Índices
 couponSchema.index({ isActive: 1 });
 couponSchema.index({ validFrom: 1, validUntil: 1 });
 couponSchema.index({ applicableRestaurants: 1 });
 
-// Virtual para verificar si está vigente
 couponSchema.virtual('isCurrentlyValid').get(function() {
     const now = new Date();
     return this.isActive && 
-           this.validFrom <= now && 
-           this.validUntil >= now &&
-           (this.usageLimit === null || this.usedCount < this.usageLimit);
+            this.validFrom <= now && 
+            this.validUntil >= now &&
+            (this.usageLimit === null || this.usedCount < this.usageLimit);
 });
 
-// Virtual para verificar si está disponible
 couponSchema.virtual('remainingUses').get(function() {
     if (this.usageLimit === null) {
         return 'Ilimitado';
@@ -158,16 +146,13 @@ couponSchema.virtual('remainingUses').get(function() {
     return Math.max(0, this.usageLimit - this.usedCount);
 });
 
-// ✅ MÉTODO PARA VALIDAR SI UN USUARIO PUEDE USAR EL CUPÓN
 couponSchema.methods.validateForUse = async function(userId, restaurantId = null, orderTotal = 0) {
     const now = new Date();
 
-    // Verificar si está activo
     if (!this.isActive) {
         return { valid: false, message: 'El cupón no está activo' };
     }
 
-    // Verificar fechas
     if (now < this.validFrom) {
         return { valid: false, message: 'El cupón aún no es válido' };
     }
@@ -176,12 +161,10 @@ couponSchema.methods.validateForUse = async function(userId, restaurantId = null
         return { valid: false, message: 'El cupón ha expirado' };
     }
 
-    // Verificar límite global de usos
     if (this.usageLimit !== null && this.usedCount >= this.usageLimit) {
         return { valid: false, message: 'El cupón ha alcanzado su límite de usos' };
     }
 
-    // Verificar monto mínimo de compra
     if (orderTotal < this.minPurchaseAmount) {
         return { 
             valid: false, 
@@ -189,7 +172,6 @@ couponSchema.methods.validateForUse = async function(userId, restaurantId = null
         };
     }
 
-    // Verificar usos por usuario
     try {
         const CouponUsage = mongoose.model('CouponUsage');
         const userUsageCount = await CouponUsage.countDocuments({
@@ -207,7 +189,6 @@ couponSchema.methods.validateForUse = async function(userId, restaurantId = null
         console.error('Error verificando uso por usuario:', error);
     }
 
-    // Verificar si aplica al restaurante
     if (this.applicableRestaurants.length > 0 && restaurantId) {
         const restaurantMatch = this.applicableRestaurants.some(
             r => r.toString() === restaurantId.toString()
@@ -220,7 +201,6 @@ couponSchema.methods.validateForUse = async function(userId, restaurantId = null
         }
     }
 
-    // Verificar si es solo para nuevos usuarios
     if (this.newUsersOnly) {
         try {
             const Order = mongoose.model('Order');
@@ -243,17 +223,15 @@ couponSchema.methods.validateForUse = async function(userId, restaurantId = null
     return { valid: true, message: 'Cupón válido' };
 };
 
-// ✅ MÉTODO PARA REGISTRAR EL USO DEL CUPÓN
 couponSchema.methods.recordUsage = async function(userId, orderId) {
     try {
         const CouponUsage = mongoose.model('CouponUsage');
-        
-        // Crear registro de uso
+
         await CouponUsage.create({
             coupon: this._id,
-            user: userId,
+            userId: userId,
             order: orderId,
-            discountApplied: 0, // Se calculará en el controlador
+            discountApplied: 0,
             usedAt: new Date()
         });
 
@@ -268,7 +246,6 @@ couponSchema.methods.recordUsage = async function(userId, orderId) {
     }
 };
 
-// Incluir virtuals en JSON
 couponSchema.set('toJSON', { virtuals: true });
 couponSchema.set('toObject', { virtuals: true });
 

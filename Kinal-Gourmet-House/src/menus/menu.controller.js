@@ -63,8 +63,6 @@ export const getMenus = async (req, res) => {
 export const getMenuById = async (req, res) => {
     try {
         const { id } = req.params;
-        
-        // Validar ObjectId
         if (!mongoose.Types.ObjectId.isValid(id)) {
             return res.status(400).json({
                 success: false,

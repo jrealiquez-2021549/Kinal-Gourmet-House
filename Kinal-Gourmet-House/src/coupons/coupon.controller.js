@@ -26,7 +26,6 @@ export const createCoupon = async (req, res) => {
             }
         }
 
-        // ✅ LIMPIAR applicableRestaurants si viene vacío o con valores inválidos
         if (couponData.applicableRestaurants) {
             couponData.applicableRestaurants = couponData.applicableRestaurants.filter(
                 id => id && mongoose.Types.ObjectId.isValid(id)
@@ -36,14 +35,13 @@ export const createCoupon = async (req, res) => {
         const coupon = new Coupon(couponData);
         await coupon.save();
 
-        // ✅ Solo hacer populate si hay restaurantes aplicables
         let populatedCoupon;
         if (coupon.applicableRestaurants && coupon.applicableRestaurants.length > 0) {
             populatedCoupon = await Coupon.findById(coupon._id)
                 .populate('applicableRestaurants', 'name address')
                 .catch(err => {
                     console.error('Error en populate:', err);
-                    return coupon; // Si falla el populate, devolver sin popular
+                    return coupon;
                 });
         } else {
             populatedCoupon = coupon;
@@ -313,8 +311,7 @@ export const updateCoupon = async (req, res) => {
                 message: "No se puede cambiar el código de un cupón ya usado"
             });
         }
-
-        // Limpiar applicableRestaurants
+        
         if (req.body.applicableRestaurants) {
             req.body.applicableRestaurants = req.body.applicableRestaurants.filter(
                 id => id && mongoose.Types.ObjectId.isValid(id)

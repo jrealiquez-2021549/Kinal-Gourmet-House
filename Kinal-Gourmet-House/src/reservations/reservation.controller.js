@@ -12,7 +12,6 @@ export const createReservation = async (req, res) => {
             });
         }
 
-        // Verificar duplicados (misma mesa, fecha y hora)
         const existing = await Reservation.findOne({
             table,
             date: new Date(date),
@@ -61,11 +60,13 @@ export const getReservations = async (req, res) => {
         const filter = {};
         if (isActive !== undefined) filter.isActive = isActive === 'true';
         if (status) filter.status = status;
-        if (restaurant) filter.restaurant = restaurant;
 
-        // Clientes solo ven sus propias reservaciones
         if (req.user.role === 'CLIENTE') {
             filter.userId = req.user.id;
+        } else if (req.user.role === 'ADMIN_RESTAURANTE') {
+            filter.restaurant = req.user.restaurantId;
+        } else if (req.user.role === 'ADMIN_GENERAL') {
+            if (restaurant) filter.restaurant = restaurant;
         }
 
         const reservations = await Reservation.find(filter)
@@ -112,7 +113,6 @@ export const getReservationById = async (req, res) => {
             return res.status(404).json({ success: false, message: "Reservación no encontrada" });
         }
 
-        // Clientes solo pueden ver sus propias reservaciones
         if (req.user.role === 'CLIENTE' && reservation.userId !== req.user.id) {
             return res.status(403).json({ success: false, message: "No tienes acceso a esta reservación" });
         }
@@ -144,8 +144,7 @@ export const updateReservation = async (req, res) => {
                 return res.status(400).json({ success: false, message: "Solo puedes modificar reservaciones PENDIENTES" });
             }
         }
-
-        // Proteger campos críticos
+        
         delete req.body.userId;
         delete req.body.userInfo;
 

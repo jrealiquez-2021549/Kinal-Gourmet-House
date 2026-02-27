@@ -5,16 +5,20 @@ import { isRestaurantAdmin, isPlatformAdmin } from "../../middlewares/role.middl
 
 const router = Router();
 
-// ✅ Público: ver eventos
 router.get('/', getEvents);
+
 router.get('/:id', getEventById);
+
 router.get('/restaurant/:restaurantId', getEventsByRestaurant);
 
-// 🔒 Gestión de eventos: solo admins de restaurante
 router.post('/create', verifyToken, isRestaurantAdmin, createEvent);
+
 router.put('/:id', verifyToken, isRestaurantAdmin, updateEvent);
+
 router.patch('/:id/status', verifyToken, isRestaurantAdmin, updateEventStatus);
+
 router.patch('/:id/cancel', verifyToken, isRestaurantAdmin, cancelEvent);
+
 router.delete('/:id', verifyToken, isPlatformAdmin, deleteEvent);
 
 export default router;

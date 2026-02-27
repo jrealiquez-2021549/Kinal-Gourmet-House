@@ -6,14 +6,16 @@ import { isPlatformAdmin } from "../../middlewares/role.middleware.js";
 
 const router = Router();
 
-// 🔒 Todas las rutas requieren autenticación
 router.use(verifyToken);
 
-// Solo PLATFORM_ADMIN gestiona usuarios en MongoDB (son espejo del AuthAPI)
 router.post('/create', isPlatformAdmin, uploadUserImages.single('profileImage'), createUser);
+
 router.get('/', isPlatformAdmin, getUsers);
-router.get('/:id', getUserById); // Cualquier usuario puede ver perfil (ajustar si es necesario)
-router.put('/:id', uploadUserImages.single('profileImage'), updateUser); // controller debe validar que sea suyo
+
+router.get('/:id', getUserById);
+
+router.put('/:id', uploadUserImages.single('profileImage'), updateUser);
+
 router.delete('/:id', isPlatformAdmin, deleteUser);
 
 export default router;
