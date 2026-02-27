@@ -1,0 +1,1055 @@
+{
+  "info": {
+    "_postman_id": "14232fd2-5e93-4592-b4be-386c566ed2a1",
+    "name": "CRUD Kinal Gourmet House - Final",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "48329923",
+    "_collection_link": "https://go.postman.co/collection/48329923-14232fd2-5e93-4592-b4be-386c566ed2a1?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Auth Restaurants",
+      "item": [
+        {
+          "name": "Login Admin General",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"email\": \"admin@system.com\",\r\n  \"password\": \"Admin123!\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3005/api/auth/login",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3005",
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Crear Admin Restaurante",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{vault:authorization-secret}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"name\": \"Admin Realiquez\",\r\n  \"email\": \"noriegarealiquez64@gmail.com\",\r\n  \"password\": \"admin2021549\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3005/api/users/create-admin-restaurant",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3005",
+              "path": [
+                "api",
+                "users",
+                "create-admin-restaurant"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Registrar Usuario",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"name\": \"Julio Realiquez\",\r\n  \"email\": \"proxy64@gmail.com\",\r\n  \"password\": \"213213123\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3005/api/auth/register",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3005",
+              "path": [
+                "api",
+                "auth",
+                "register"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Autorizar Usuario",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3005/api/auth/verify/{{vault:json-web-token}}",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3005",
+              "path": [
+                "api",
+                "auth",
+                "verify",
+                "{{vault:json-web-token}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Login Admin Restaurante",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"email\": \"noriegarealiquez64@gmail.com\",\r\n  \"password\": \"admin2021549\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3005/api/auth/login",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3005",
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Login Usuario",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"email\": \"proxy64@gmail.com\",\r\n  \"password\": \"213213123\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3005/api/auth/login",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3005",
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Kinal-Gourmet-House",
+      "item": [
+        {
+          "name": "Restaurante",
+          "item": [
+            {
+              "name": "Crear restaurante",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{vault:authorization-secret}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"name\": \"La Fonda Chapina\",\r\n  \"description\": \"Comida guatemalteca tradicional auténtica\",\r\n  \"address\": \"5a Avenida 10-20, Zona 1, Guatemala\",\r\n  \"location\": {\r\n    \"type\": \"Point\",\r\n    \"coordinates\": [-90.5069, 14.6407]\r\n  },\r\n  \"addressDetails\": {\r\n    \"street\": \"5a Avenida 10-20\",\r\n    \"zone\": \"Zona 1\",\r\n    \"city\": \"Guatemala\",\r\n    \"department\": \"Guatemala\",\r\n    \"country\": \"Guatemala\"\r\n  },\r\n  \"phone\": \"22345678\",\r\n  \"email\": \"contacto@fondachapina.com\",\r\n  \"category\": \"CASUAL\",\r\n  \"averagePrice\": 75.00,\r\n  \"openingHours\": \"08:00\",\r\n  \"closingHours\": \"21:00\",\r\n  \"features\": {\r\n    \"hasParking\": false,\r\n    \"hasWifi\": true,\r\n    \"hasDelivery\": false,\r\n    \"hasTakeout\": true,\r\n    \"acceptsReservations\": true\r\n  },\r\n  \"paymentMethods\": [\"EFECTIVO\", \"TARJETA\"],\r\n  \"priceRange\": \"$$\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:3006/kinalGourmetHouse/v1/restaurants/create",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3006",
+                  "path": [
+                    "kinalGourmetHouse",
+                    "v1",
+                    "restaurants",
+                    "create"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Listar Restaurantes",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{vault:authorization-secret}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:3006/kinalGourmetHouse/v1/restaurants/",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3006",
+                  "path": [
+                    "kinalGourmetHouse",
+                    "v1",
+                    "restaurants",
+                    ""
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Mesas",
+          "item": [
+            {
+              "name": "Agregar Mesas",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{vault:authorization-secret}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"number\": \"1\",\r\n  \"capacity\": 4,\r\n  \"location\": \"INTERIOR\",\r\n  \"restaurant\": \"69a0e2db7598daa4f6519bd1\",\r\n  \"description\": \"Mesa junto a la ventana\",\r\n  \"shape\": \"CUADRADA\",\r\n  \"minCapacity\": 1,\r\n  \"features\": {\r\n    \"hasView\": true,\r\n    \"isQuiet\": true,\r\n    \"nearWindow\": true\r\n  }\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:3006/kinalGourmetHouse/v1/tables/create",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3006",
+                  "path": [
+                    "kinalGourmetHouse",
+                    "v1",
+                    "tables",
+                    "create"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Platillos",
+          "item": [
+            {
+              "name": "Agregar platillo",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{vault:authorization-secret}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"name\": \"Limonada Natural\",\r\n  \"description\": \"Limonada fresca exprimida al momento\",\r\n  \"ingredients\": [\"limón\", \"agua\", \"azúcar\"],\r\n  \"price\": 15.00,\r\n  \"type\": \"BEBIDA\",\r\n  \"category\": \"NINGUNA\",\r\n  \"restaurant\": \"69a0e2db7598daa4f6519bd1\",\r\n  \"preparationTime\": 5,\r\n  \"spicyLevel\": \"NINGUNO\",\r\n  \"isAvailable\": true\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:3006/kinalGourmetHouse/v1/dishes/create",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3006",
+                  "path": [
+                    "kinalGourmetHouse",
+                    "v1",
+                    "dishes",
+                    "create"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Listar Platillos",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{vault:authorization-secret}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:3006/kinalGourmetHouse/v1/dishes/",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3006",
+                  "path": [
+                    "kinalGourmetHouse",
+                    "v1",
+                    "dishes",
+                    ""
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Cupón",
+          "item": [
+            {
+              "name": "Crear Cupón",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{vault:authorization-secret}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"code\": \"COUPONPOKEMON\",\r\n  \"description\": \"20% de descuento para nuevos clientes\",\r\n  \"discountType\": \"PERCENTAGE\",\r\n  \"discountValue\": 20,\r\n  \"minPurchaseAmount\": 50,\r\n  \"validFrom\": \"2026-01-01\",\r\n  \"validUntil\": \"2026-12-31\",\r\n  \"usageLimit\": 100,\r\n  \"usageLimitPerUser\": 1,\r\n  \"applicableRestaurants\": [\"69a0e2db7598daa4f6519bd1\"],\r\n  \"newUsersOnly\": false,\r\n  \"isActive\": true\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:3006/kinalGourmetHouse/v1/coupons/create",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3006",
+                  "path": [
+                    "kinalGourmetHouse",
+                    "v1",
+                    "coupons",
+                    "create"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Listar Coupones",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{vault:authorization-secret}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:3006/kinalGourmetHouse/v1/coupons/",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3006",
+                  "path": [
+                    "kinalGourmetHouse",
+                    "v1",
+                    "coupons",
+                    ""
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Reservaciones",
+          "item": [
+            {
+              "name": "Agregar Reservación",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{vault:authorization-secret}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"restaurant\": \"69a0e2db7598daa4f6519bd1\",\r\n  \"table\": \"69a0e3087598daa4f6519bd5\",\r\n  \"date\": \"2026-03-15\",\r\n  \"time\": \"19:00\",\r\n  \"numberOfGuests\": 3,\r\n  \"specialRequests\": \"Mesa con vista al jardín, por favor.\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:3006/kinalGourmetHouse/v1/reservations/create",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3006",
+                  "path": [
+                    "kinalGourmetHouse",
+                    "v1",
+                    "reservations",
+                    "create"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Listar Reservaciones",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiIxMWM1MGNhYS1lNzQyLTRjNWMtYjM4MS1mZWI4ZTYyM2M3YWIiLCJyb2xlIjoiYmM0NTg1YjEtZmFmOS00MTk2LWFmOTMtMTU4YjFiZDAzOWY4IiwiaWF0IjoxNzcyMTU3MjY3LCJleHAiOjE3NzIxNTkwNjd9.emYZiHH2d-GSRWbTvryy0Sj7HI0HP66vur2JSvUphXM",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:3006/kinalGourmetHouse/v1/reservations",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3006",
+                  "path": [
+                    "kinalGourmetHouse",
+                    "v1",
+                    "reservations"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Ordenes",
+          "item": [
+            {
+              "name": "Hacer Orden",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{vault:authorization-secret}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"restaurant\": \"69a0e2db7598daa4f6519bd1\",\r\n  \"table\": \"69a0e3087598daa4f6519bd5\",\r\n  \"orderType\": \"EN_MESA\",\r\n  \"details\": [\r\n    {\r\n      \"dish\": \"69a0e31d7598daa4f6519bd7\",\r\n      \"quantity\": 1,\r\n      \"unitPrice\": 65.00,\r\n      \"specialInstructions\": \"Sin chile\"\r\n    },\r\n    {\r\n      \"dish\": \"69a0e31d7598daa4f6519bd7\",\r\n      \"quantity\": 2,\r\n      \"unitPrice\": 15.00\r\n    }\r\n  ]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:3006/kinalGourmetHouse/v1/orders/create",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3006",
+                  "path": [
+                    "kinalGourmetHouse",
+                    "v1",
+                    "orders",
+                    "create"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Hacer Orden con Descuento",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{vault:authorization-secret}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"restaurant\": \"69a0e2db7598daa4f6519bd1\",\r\n    \"orderType\": \"EN_MESA\",\r\n    \"table\": \"69a0e3087598daa4f6519bd5\",\r\n    \"couponCode\": \"COUPONPOKEMON\",\r\n    \"details\": [\r\n        {\r\n            \"dish\": \"69a0e31d7598daa4f6519bd7\",\r\n            \"quantity\": 2,\r\n            \"unitPrice\": 85.00\r\n        }\r\n    ]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:3006/kinalGourmetHouse/v1/orders/create",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3006",
+                  "path": [
+                    "kinalGourmetHouse",
+                    "v1",
+                    "orders",
+                    "create"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Listar Ordenes",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{vault:authorization-secret}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:3006/kinalGourmetHouse/v1/orders/",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3006",
+                  "path": [
+                    "kinalGourmetHouse",
+                    "v1",
+                    "orders",
+                    ""
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Cancelar Orden",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{vault:authorization-secret}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PATCH",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:3006/kinalGourmetHouse/v1/orders/69951672d3b8c85d5cc1acb2/cancel",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3006",
+                  "path": [
+                    "kinalGourmetHouse",
+                    "v1",
+                    "orders",
+                    "69951672d3b8c85d5cc1acb2",
+                    "cancel"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Estado de Orden",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{vault:authorization-secret}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PATCH",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{ \r\n    \"status\": \"EN_PREPARACION\" \r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:3006/kinalGourmetHouse/v1/orders/69a0e3fc7598daa4f6519be4/status",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3006",
+                  "path": [
+                    "kinalGourmetHouse",
+                    "v1",
+                    "orders",
+                    "69a0e3fc7598daa4f6519be4",
+                    "status"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Facturas",
+          "item": [
+            {
+              "name": "Crear Factura",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{vault:authorization-secret}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"order\": \"69a0e3fc7598daa4f6519be4\",\r\n  \"restaurant\": \"69a0e2db7598daa4f6519bd1\",\r\n  \"customerInfo\": {\r\n    \"name\": \"Ana Cliente\",\r\n    \"email\": \"ana@gmail.com\",\r\n    \"nit\": \"CF\"\r\n  },\r\n  \"restaurantInfo\": {\r\n    \"name\": \"La Fonda Chapina\",\r\n    \"address\": \"5a Avenida 10-20, Zona 1\"\r\n  },\r\n  \"subtotal\": 95.00,\r\n  \"taxRate\": 12,\r\n  \"discount\": 0,\r\n  \"paymentMethod\": \"EFECTIVO\",\r\n  \"amountPaid\": 100.00\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:3006/kinalGourmetHouse/v1/invoices/create",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3006",
+                  "path": [
+                    "kinalGourmetHouse",
+                    "v1",
+                    "invoices",
+                    "create"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Reseñas",
+          "item": [
+            {
+              "name": "Reseña",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{vault:authorization-secret}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  // \"dish\": \"69a0e31d7598daa4f6519bd7\",\r\n  \"restaurant\": \"69a0e2db7598daa4f6519bd1\",\r\n  \"rating\": 5,\r\n  \"comment\": \"Excelente comida, el pepián estaba delicioso.\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:3006/kinalGourmetHouse/v1/reviews/create",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3006",
+                  "path": [
+                    "kinalGourmetHouse",
+                    "v1",
+                    "reviews",
+                    "create"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Eventos",
+          "item": [
+            {
+              "name": "Agregar Evento",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{vault:authorization-secret}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"name\": \"Noche Italiana\",\r\n    \"description\": \"Cena especial con menú italiano\",\r\n    \"restaurant\": \"69a0e2db7598daa4f6519bd1\",\r\n    \"date\": \"2026-03-15\",\r\n    \"startTime\": \"19:00\",\r\n    \"endTime\": \"23:00\",\r\n    \"capacity\": 50,\r\n    \"price\": 150.00\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:3006/kinalGourmetHouse/v1/events/create",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3006",
+                  "path": [
+                    "kinalGourmetHouse",
+                    "v1",
+                    "events",
+                    "create"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Promociones",
+          "item": [
+            {
+              "name": "Agregar promoción",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{vault:authorization-secret}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"title\": \"Happy Hour Viernes\",\r\n    \"description\": \"25% de descuento en bebidas los viernes\",\r\n    \"type\": \"HAPPY_HOUR\",\r\n    \"discountPercentage\": 25,\r\n    \"startDate\": \"2026-03-01\",\r\n    \"endDate\": \"2026-06-30\",\r\n    \"timeRestriction\": {\r\n        \"startTime\": \"17:00\",\r\n        \"endTime\": \"19:00\"\r\n    },\r\n    \"applicableDays\": [\"VIERNES\", \"SABADO\"],\r\n    \"minPurchaseAmount\": 50,\r\n    \"usageLimit\": 100,\r\n    \"usageLimitPerUser\": 1,\r\n    \"promoCode\": \"HAPPY25\",\r\n    \"requiresCode\": false,\r\n    \"newCustomersOnly\": false,\r\n    \"applicableOrderTypes\": [\"EN_MESA\", \"PARA_LLEVAR\"],\r\n    \"priority\": 5,\r\n    \"isFeatured\": true,\r\n    \"termsAndConditions\": \"Válido solo en bebidas seleccionadas\",\r\n    \"restaurant\": \"64f1a2b3c4d5e6f7a8b9c0d1\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:3006/kinalGourmetHouse/v1/promotions/create",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3006",
+                  "path": [
+                    "kinalGourmetHouse",
+                    "v1",
+                    "promotions",
+                    "create"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Notificaciones",
+          "item": [
+            {
+              "name": "Notificación",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{vault:authorization-secret}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"userId\": \"b461522b-7a30-4e68-bc14-6e9f2e97e267\",\r\n    \"type\": \"ORDER_READY\",\r\n    \"title\": \"Tu orden está lista\",\r\n    \"message\": \"Tu pedido #001 está listo para recoger\",\r\n    \"priority\": \"HIGH\",\r\n    \"channel\": \"IN_APP\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:3006/kinalGourmetHouse/v1/notifications/create",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3006",
+                  "path": [
+                    "kinalGourmetHouse",
+                    "v1",
+                    "notifications",
+                    "create"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Reportes",
+          "item": [
+            {
+              "name": "Reportes",
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{vault:authorization-secret}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:3006/kinalGourmetHouse/v1/reports/dashboard/69a0e2db7598daa4f6519bd1",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3006",
+                  "path": [
+                    "kinalGourmetHouse",
+                    "v1",
+                    "reports",
+                    "dashboard",
+                    "69a0e2db7598daa4f6519bd1"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

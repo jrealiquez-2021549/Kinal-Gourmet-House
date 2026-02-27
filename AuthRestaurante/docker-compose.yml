@@ -1,0 +1,15 @@
+version: '3'
+
+services:
+  restaurant_db:
+    image: postgres:16
+    container_name: KGourmetAuth
+    restart: always
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: KGourmetAuth
+    ports:
+      - "5436:5432"
+    volumes:
+      - ./postgres:/var/lib/postgresql/data
