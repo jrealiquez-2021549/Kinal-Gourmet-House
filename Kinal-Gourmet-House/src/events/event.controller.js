@@ -49,6 +49,10 @@ export const getEvents = async (req, res) => {
         if (isActive !== undefined) filter.isActive = isActive === 'true';
         if (status) filter.status = status;
         if (restaurant) filter.restaurant = restaurant;
+        // ADMIN_RESTAURANTE solo ve los de su propio restaurante
+        if (req.user && req.user.role === 'ADMIN_RESTAURANTE') {
+            filter.restaurant = req.user.restaurantId;
+        }
         
         if (upcoming === 'true') {
             const now = new Date();

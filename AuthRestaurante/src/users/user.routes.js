@@ -1,8 +1,7 @@
 import { Router } from 'express'
-import { createAdminRest } from './user.controller.js'
+import { createAdminRest, updateMyPassword, assignRestaurant } from './user.controller.js'
 import { validateJWT } from '../../middlewares/validate-jwt.js'
 import { validateRole } from '../../middlewares/validate-role.js'
-import { updateMyPassword } from './user.controller.js'
 
 const router = Router()
 
@@ -18,6 +17,13 @@ router.patch(
   validateJWT,
   validateRole('ADMIN_RESTAURANTE', 'ADMIN_GENERAL', 'CLIENTE'),
   updateMyPassword
+)
+
+router.patch(
+  '/:id/assign-restaurant',
+  validateJWT,
+  validateRole('ADMIN_GENERAL'),
+  assignRestaurant
 )
 
 export default router

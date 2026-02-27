@@ -1,74 +1,26 @@
 import { Router } from "express";
-import { 
-    createCoupon, 
-    getCoupons,
-    getCouponById,
-    getCouponByCode,
-    validateCoupon,
-    updateCoupon,
-    deleteCoupon,
-    getCouponUsageHistory,
-    getUserCouponUsage
-} from "./coupon.controller.js";
+import { createCoupon, getCoupons,getCouponById,getCouponByCode,validateCoupon,updateCoupon,deleteCoupon,getCouponUsageHistory,getUserCouponUsage } from "./coupon.controller.js";
 import { verifyToken } from "../../middlewares/auth-integration.middleware.js";
-import { isPlatformAdmin, isRestaurantAdmin } from "../../middlewares/role.middleware.js";
+import { isPlatformAdmin, isRestaurantAdmin, belongsToRestaurant } from "../../middlewares/role.middleware.js";
 
 const router = Router();
 
-router.post(
-    '/validate', 
-    validateCoupon
-);
+router.post('/validate', validateCoupon);
 
-router.get(
-    '/code/:code',
-    getCouponByCode
-);
+router.get('/code/:code', getCouponByCode);
 
-router.post(
-    '/create',
-    verifyToken,
-    isRestaurantAdmin,
-    createCoupon
-);
+router.post('/create', verifyToken, isRestaurantAdmin, belongsToRestaurant, createCoupon);
 
-router.get(
-    '/',
-    verifyToken,
-    getCoupons
-);
+router.get('/', verifyToken, getCoupons);
 
-router.get(
-    '/:id',
-    verifyToken,
-    getCouponById
-);
+router.get('/:id/usage', verifyToken, isRestaurantAdmin, getCouponUsageHistory);
 
-router.put(
-    '/:id',
-    verifyToken,
-    isRestaurantAdmin,
-    updateCoupon
-);
+router.get('/user/:userId/usage', verifyToken, getUserCouponUsage);
 
-router.delete(
-    '/:id',
-    verifyToken,
-    isPlatformAdmin,
-    deleteCoupon
-);
+router.get('/:id', verifyToken, getCouponById);
 
-router.get(
-    '/:id/usage',
-    verifyToken,
-    isRestaurantAdmin,
-    getCouponUsageHistory
-);
+router.put('/:id', verifyToken, isRestaurantAdmin, belongsToRestaurant, updateCoupon);
 
-router.get(
-    '/user/:userId/usage',
-    verifyToken,
-    getUserCouponUsage
-);
+router.delete('/:id', verifyToken, isRestaurantAdmin, deleteCoupon);
 
 export default router;

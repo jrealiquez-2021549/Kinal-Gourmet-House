@@ -70,3 +70,42 @@ export const isAuthenticated = (req, res, next) => {
     }
     next();
 };
+
+// Verifica que el ADMIN_RESTAURANTE solo opere en su propio restaurante
+export const belongsToRestaurant = (req, res, next) => {
+    // ADMIN_GENERAL puede operar en cualquier restaurante
+    if (!req.user || req.user.role === 'ADMIN_GENERAL') {
+        return next();
+    }
+
+    // CLIENTE no necesita esta validación
+    if (req.user.role === 'CLIENTE') {
+        return next();
+    }
+
+    // Obtener el restaurantId de la request (body, params o query)
+    const restaurantId =
+        req.body?.restaurant ||
+        req.params?.restaurantId ||
+        req.query?.restaurant;
+
+    // Si no viene restaurantId en la request, dejar pasar (el controlador lo manejará)
+    if (!restaurantId) {
+        return next();
+    }
+
+    // Si el token aún no trae restaurantId (AuthRestaurante pendiente de actualizar), dejar pasar
+    if (!req.user.restaurantId) {
+        return next();
+    }
+
+    // Verificar que el restaurantId de la request coincida con el del token
+    if (req.user.restaurantId.toString() !== restaurantId.toString()) {
+        return res.status(403).json({
+            success: false,
+            message: 'Acceso denegado. No tienes autorización para operar en este restaurante.'
+        });
+    }
+
+    next();
+};

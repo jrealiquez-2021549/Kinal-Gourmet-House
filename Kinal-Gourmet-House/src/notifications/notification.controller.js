@@ -35,10 +35,15 @@ export const getNotifications = async (req, res) => {
 
         const filter = {};
         
-        if (req.user.role !== 'ADMIN_GENERAL') {
+        if (req.user.role === 'ADMIN_GENERAL') {
+            if (req.query.user) filter.userId = req.query.user;
+        } else if (req.user.role === 'ADMIN_RESTAURANTE') {
+            filter.$or = [
+                { userId: req.user.id },
+                { restaurantId: req.user.restaurantId }
+            ];
+        } else {
             filter.userId = req.user.id;
-        } else if (req.query.user) {
-            filter.user = req.query.user;
         }
 
         if (isRead !== undefined) filter.isRead = isRead === 'true';

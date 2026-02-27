@@ -38,7 +38,8 @@ export const createOrder = async (req, res) => {
         details.forEach(item => {
             totalPrice += item.quantity * item.unitPrice;
         });
-        
+
+        // Aplicar cupón si se envió
         let discount = 0;
         let appliedCoupon = null;
 
@@ -71,6 +72,7 @@ export const createOrder = async (req, res) => {
                 discount = coupon.discountValue;
             }
 
+            // No dejar que el descuento supere el total
             discount = Math.min(discount, totalPrice);
             appliedCoupon = coupon._id;
         }
@@ -94,6 +96,7 @@ export const createOrder = async (req, res) => {
 
         await order.save();
 
+        // Registrar uso del cupón ahora que ya tenemos el ID de la orden
         if (appliedCoupon) {
             const Coupon = mongoose.model('Coupon');
             const coupon = await Coupon.findById(appliedCoupon);
@@ -121,10 +124,13 @@ export const getOrders = async (req, res) => {
         const filter = {};
 
         if (status) filter.status = status;
-        if (restaurant) filter.restaurant = restaurant;
 
         if (req.user.role === 'CLIENTE') {
             filter.userId = req.user.id;
+        } else if (req.user.role === 'ADMIN_RESTAURANTE') {
+            filter.restaurant = req.user.restaurantId;
+        } else if (req.user.role === 'ADMIN_GENERAL') {
+            if (restaurant) filter.restaurant = restaurant;
         }
 
         const orders = await Order.find(filter)

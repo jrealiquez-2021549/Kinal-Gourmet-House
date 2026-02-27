@@ -12,6 +12,18 @@ export const createCoupon = async (req, res) => {
             createdByName: req.user?.name || 'Sistema'
         };
 
+        // ADMIN_RESTAURANTE solo puede crear cupones para su restaurante
+        if (req.user && req.user.role === 'ADMIN_RESTAURANTE') {
+            if (!couponData.applicableRestaurants || couponData.applicableRestaurants.length === 0) {
+                couponData.applicableRestaurants = [req.user.restaurantId];
+            } else if (!couponData.applicableRestaurants.includes(req.user.restaurantId)) {
+                return res.status(403).json({
+                    success: false,
+                    message: 'Acceso denegado. No tienes autorización para crear cupones en este restaurante.'
+                });
+            }
+        }
+
         // Validar que el código no exista
         if (couponData.code) {
             const existingCoupon = await Coupon.findOne({ 
@@ -98,7 +110,12 @@ export const getCoupons = async (req, res) => {
             filter.isActive = isActive === 'true';
         }
 
-        if (restaurant) {
+        if (req.user && req.user.role === 'ADMIN_RESTAURANTE') {
+            filter.$or = [
+                { applicableRestaurants: { $size: 0 } },
+                { applicableRestaurants: req.user.restaurantId }
+            ];
+        } else if (restaurant) {
             filter.$or = [
                 { applicableRestaurants: { $size: 0 } },
                 { applicableRestaurants: restaurant }
@@ -305,6 +322,19 @@ export const updateCoupon = async (req, res) => {
             });
         }
 
+        // ADMIN_RESTAURANTE solo puede modificar cupones de su restaurante
+        if (req.user && req.user.role === 'ADMIN_RESTAURANTE') {
+            const belongsToRestaurant = currentCoupon.applicableRestaurants.some(
+                r => r.toString() === req.user.restaurantId
+            );
+            if (!belongsToRestaurant) {
+                return res.status(403).json({
+                    success: false,
+                    message: 'Acceso denegado. No tienes autorización para modificar este cupón.'
+                });
+            }
+        }
+
         if (req.body.code && currentCoupon.usedCount > 0) {
             return res.status(400).json({
                 success: false,
@@ -359,6 +389,19 @@ export const deleteCoupon = async (req, res) => {
                 success: false,
                 message: "Cupón no encontrado",
             });
+        }
+
+        // ADMIN_RESTAURANTE solo puede eliminar cupones de su restaurante
+        if (req.user && req.user.role === 'ADMIN_RESTAURANTE') {
+            const belongsToRestaurant = coupon.applicableRestaurants.some(
+                r => r.toString() === req.user.restaurantId
+            );
+            if (!belongsToRestaurant) {
+                return res.status(403).json({
+                    success: false,
+                    message: 'Acceso denegado. No tienes autorización para eliminar este cupón.'
+                });
+            }
         }
 
         if (coupon.usedCount > 0) {

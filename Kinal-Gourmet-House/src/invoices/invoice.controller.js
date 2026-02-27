@@ -27,6 +27,10 @@ export const createInvoice = async (req, res) => {
             return res.status(400).json({ success: false, message: 'Orden y restaurante son requeridos' });
         }
 
+        if (req.user.role === 'ADMIN_RESTAURANTE' && req.user.restaurantId !== restaurant.toString()) {
+            return res.status(403).json({ success: false, message: 'Acceso denegado. No tienes autorización para crear facturas en este restaurante.' });
+        }
+
         if (!mongoose.Types.ObjectId.isValid(order)) {
             return res.status(400).json({ success: false, message: 'ID de orden inválido' });
         }
@@ -92,10 +96,12 @@ export const getInvoices = async (req, res) => {
         const { page = 1, limit = 10, restaurant } = req.query;
         const filter = {};
 
-        if (restaurant) filter.restaurant = restaurant;
-
         if (req.user.role === 'CLIENTE') {
             filter.userId = req.user.id;
+        } else if (req.user.role === 'ADMIN_RESTAURANTE') {
+            filter.restaurant = req.user.restaurantId;
+        } else if (req.user.role === 'ADMIN_GENERAL') {
+            if (restaurant) filter.restaurant = restaurant;
         }
 
         const invoices = await Invoice.find(filter)
@@ -132,6 +138,10 @@ export const getInvoiceById = async (req, res) => {
             return res.status(403).json({ success: false, message: 'No tienes acceso a esta factura' });
         }
 
+        if (req.user.role === 'ADMIN_RESTAURANTE' && invoice.restaurant._id.toString() !== req.user.restaurantId) {
+            return res.status(403).json({ success: false, message: 'No tienes acceso a esta factura' });
+        }
+
         res.status(200).json({ success: true, data: invoice });
     } catch (error) {
         res.status(500).json({ success: false, message: 'Error al obtener factura', error: error.message });
@@ -148,6 +158,10 @@ export const getInvoiceByNumber = async (req, res) => {
         if (!invoice) return res.status(404).json({ success: false, message: 'Factura no encontrada' });
 
         if (req.user.role === 'CLIENTE' && invoice.userId !== req.user.id) {
+            return res.status(403).json({ success: false, message: 'No tienes acceso a esta factura' });
+        }
+
+        if (req.user.role === 'ADMIN_RESTAURANTE' && invoice.restaurant._id.toString() !== req.user.restaurantId) {
             return res.status(403).json({ success: false, message: 'No tienes acceso a esta factura' });
         }
 

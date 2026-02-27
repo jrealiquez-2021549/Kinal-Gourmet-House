@@ -6,7 +6,7 @@ import { isPlatformAdmin, isRestaurantAdmin } from "../../middlewares/role.middl
 
 const router = Router();
 
-router.get('/', getRestaurants);
+router.get('/', verifyToken, getRestaurants);
 
 router.get('/:id', getRestaurantById);
 

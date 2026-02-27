@@ -29,7 +29,11 @@ export const getPromotions = async (req, res) => {
         if (isActive !== undefined) filter.isActive = isActive === 'true';
         if (restaurant) filter.restaurant = restaurant;
         
-        if (current === 'true') {
+        if (current === 'true')
+        // ADMIN_RESTAURANTE solo ve los de su propio restaurante
+        if (req.user && req.user.role === 'ADMIN_RESTAURANTE') {
+            filter.restaurant = req.user.restaurantId;
+        } {
             const now = new Date();
             filter.startDate = { $lte: now };
             filter.endDate = { $gte: now };
