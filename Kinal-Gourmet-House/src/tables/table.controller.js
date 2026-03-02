@@ -37,6 +37,17 @@ export const getTables = async (req, res) => {
             filter.restaurant = req.user.restaurantId;
         }
 
+        if (req.user && req.user.role === 'CLIENTE') {
+            if(!restaurant){
+                return res.status(400).json({
+                    success: false,
+                    message: 'Debe especificar el ID del restaurante para ver sus mesas'
+                });
+            }
+            filter.restaurant = restaurant;
+            filter.isActive = true; // opcional: ocultar mesas desactivadas
+        }
+
         const tables = await Table.find(filter)
             .populate('restaurant', 'name address phone')
             .limit(limit * 1)
