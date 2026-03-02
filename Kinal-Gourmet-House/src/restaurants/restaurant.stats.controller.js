@@ -10,8 +10,8 @@ export const getRestaurantStats = async (req, res) => {
         const totalOrders = await Order.countDocuments({ restaurant: restaurantId });
 
         //Variable en donde se almacenaran los ingresos totales
-        const revenueRestult = await Order.aggregare([
-            { $match: { restaurant: restauranteId, status: 'ENTREGADO' } },
+        const revenueResult = await Order.aggregate([
+            { $match: { restaurant: restaurantId, status: 'ENTREGADO' } },
             { $group: { _id: null, total: { $sum: '$totalPrice'} } }
         ]);
         const totalRevenue = revenueResult[0]?.total || 0;

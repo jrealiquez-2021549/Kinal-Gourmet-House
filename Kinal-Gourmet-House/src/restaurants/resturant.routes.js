@@ -3,12 +3,15 @@ import { createRestaurant, getRestaurants, getRestaurantById, updateRestaurant, 
 import { uploadRestaurantImages } from "../../middlewares/files-uploaders.js";
 import { verifyToken } from "../../middlewares/auth-integration.middleware.js";
 import { isPlatformAdmin, isRestaurantAdmin } from "../../middlewares/role.middleware.js";
+import { getRestaurantStats } from './restaurant.stats.controller.js';
 
 const router = Router();
 
 router.get('/', verifyToken, getRestaurants);
 
 router.get('/:id', getRestaurantById);
+
+router.get('/:id/stats', verifyToken, isRestaurantAdmin,  getRestaurantStats);
 
 router.post('/create', verifyToken, isPlatformAdmin, uploadRestaurantImages.single('image'), createRestaurant);
 
