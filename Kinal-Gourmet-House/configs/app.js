@@ -21,6 +21,7 @@ import invoiceRoutes from '../src/invoices/invoice.routes.js';
 import couponRoutes from '../src/coupons/coupon.routes.js';
 import notificationRoutes from '../src/notifications/notification.routes.js';
 import reportRoutes from '../src/reports/report.routes.js';
+import { swaggerSpec, swaggerUi } from './swagger.js'
 
 const BASE_PATH = '/kinalGourmetHouse/v1';
 
@@ -33,6 +34,7 @@ const middlewares = (app) => {
 };
 
 const routes = (app) => {
+
     app.get(`${BASE_PATH}/health`, (request, response) => {
         response.status(200).json({
             status: 'Healthy',
@@ -56,6 +58,15 @@ const routes = (app) => {
     app.use(`${BASE_PATH}/notifications`, notificationRoutes);
     app.use(`${BASE_PATH}/reports`, reportRoutes);
 
+    // ✅ SWAGGER VA AQUÍ (ANTES DEL 404)
+    app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+        customSiteTitle: 'Kinal Gourmet House API',
+        swaggerOptions: {
+            persistAuthorization: true,
+        },
+    }));
+
+    // ❌ 404 SIEMPRE AL FINAL
     app.use((req, res) => {
         res.status(404).json({
             success: false,
